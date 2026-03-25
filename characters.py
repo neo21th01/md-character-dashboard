@@ -88,6 +88,8 @@ CHARACTERS = [
             "assets/characters/celine_2.jpg",
             "assets/characters/celine_sansitu_1.jpeg",
             "assets/characters/celine_sansitu_2.jpeg",
+            "assets/characters/wangzhihan_sv3.jpg",
+            "assets/characters/wangzhihan_sv4.jpg",
         ],
         "basic": [
             ("角色名称", "王芷涵（Céline wang）"),
