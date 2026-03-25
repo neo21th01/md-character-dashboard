@@ -86,10 +86,6 @@ CHARACTERS = [
         "images": [
             "assets/characters/celine_1.jpg",
             "assets/characters/celine_2.jpg",
-            "assets/characters/celine_front.jpg",
-            "assets/characters/celine_side.jpg",
-            "assets/characters/wangzhihan_sv1.jpg",
-            "assets/characters/wangzhihan_sv2.jpg",
         ],
         "basic": [
             ("角色名称", "王芷涵（Céline wang）"),
@@ -240,10 +236,6 @@ CHARACTERS = [
             "assets/characters/guran_side.jpg",
             "assets/characters/guran_back.jpg",
             "assets/characters/guran_pose.jpg",
-            "assets/characters/guran_sv_1.jpg",
-            "assets/characters/guran_sv_2.jpg",
-            "assets/characters/guran_sv_3.jpg",
-            "assets/characters/guran_sv_4.jpg",
         ],
         "basic": [
             ("角色名称", "顾染"),
