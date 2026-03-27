@@ -96,7 +96,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-tab1, tab2, tab3 = st.tabs(["🎭 角色 IP 档案", "📋 专案进度", "📊 IG 数据"])
+tab1, tab2, tab3 = st.tabs(["🎭 角色 IP 档案", "📋 专案进度", "📊 社群數據"])
 
 
 # ════════════════════════════════════════════════════════
@@ -469,13 +469,13 @@ with tab3:
             "ig_url": "https://www.instagram.com/celine_iso/",
             "color": "#7C6BDB",
             "status": "new",
-            "followers": 223,
+            "followers": 4,
             "following": None,
             "posts": None,
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "舊帳號 @celineparisasia 被封，改為新帳",
+            "note": "舊帳號 @celineparisasia 被封，改為新帳（4貼文）",
             "updated": "2026-03-27",
             "platforms": [
                 ("📸 IG",      "https://www.instagram.com/celine_iso/"),
@@ -546,9 +546,12 @@ with tab3:
         "pending": ("⏳ 待建立", "#555"),
     }
 
-    # ── KPI 卡片：總追蹤數 ────────────────────────────────
+    # ── KPI 卡片 ─────────────────────────────────────────
     total_followers = sum(d["followers"] for d in IG_DATA if d["followers"])
+    active_names = "・".join(d["name"] for d in IG_DATA if d["status"] in ("active", "new"))
     active_count = sum(1 for d in IG_DATA if d["status"] in ("active", "new"))
+    pending_names = "・".join(d["name"] for d in IG_DATA if d["status"] == "pending")
+    pending_count = sum(1 for d in IG_DATA if d["status"] == "pending")
 
     st.markdown(f"""
     <div class="kpi-wrap">
@@ -560,12 +563,12 @@ with tab3:
       <div class="kpi-card">
         <div class="kpi-label">已開設帳號</div>
         <div class="kpi-value" style="color:#FFB300;">{active_count} / 5</div>
-        <div class="kpi-sub">林浅浅・Céline</div>
+        <div class="kpi-sub">{active_names}</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">待建立帳號</div>
-        <div class="kpi-value" style="color:#555;">3 / 5</div>
-        <div class="kpi-sub">顾染・胡芊璐・倪妮</div>
+        <div class="kpi-value" style="color:#555;">{pending_count} / 5</div>
+        <div class="kpi-sub">{pending_names}</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">數據更新方式</div>
@@ -575,39 +578,28 @@ with tab3:
     </div>
     """, unsafe_allow_html=True)
 
-    # ── 追蹤數長條圖 ─────────────────────────────────────
-    active_data = [d for d in IG_DATA if d["followers"] is not None]
-    if active_data:
-        fig_bar = go.Figure(go.Bar(
-            x=[d["name"] for d in active_data],
-            y=[d["followers"] for d in active_data],
-            marker_color=[d["color"] for d in active_data],
-            text=[f'{d["followers"]:,}' for d in active_data],
-            textposition="outside",
-        ))
-        fig_bar.update_layout(
-            height=280,
-            margin=dict(l=0, r=0, t=20, b=0),
-            plot_bgcolor="#242424",
-            paper_bgcolor="#242424",
-            font=dict(color="#aaa", size=13),
-            xaxis=dict(gridcolor="#333", linecolor="#333"),
-            yaxis=dict(gridcolor="#333", linecolor="#333", title="追蹤數"),
-            showlegend=False,
-        )
-        st.plotly_chart(fig_bar, use_container_width=True)
-
     # ── 各角色明細卡片 ────────────────────────────────────
-    st.markdown("### 👤 各角色 IG 明細")
+    st.markdown("### 👤 各角色社群明細")
+
+    def fmt_metric(val):
+        return f"{val:,}" if val is not None else "—"
 
     for d in IG_DATA:
         status_text, status_color = STATUS_LABEL[d["status"]]
-        ig_link = f'<a href="{d["ig_url"]}" target="_blank" style="color:#888;font-size:12px;">{d["ig"]} ↗</a>' if d["ig"] else '<span style="color:#444;font-size:12px;">—</span>'
+        ig_link = (f'<a href="{d["ig_url"]}" target="_blank" style="color:#888;font-size:12px;">'
+                   f'{d["ig"]} ↗</a>') if d["ig"] else '<span style="color:#444;font-size:12px;">—</span>'
         followers_str = f'{d["followers"]:,}' if d["followers"] is not None else "—"
         updated_str = d["updated"] or "—"
 
-        def fmt_metric(val, suffix=""):
-            return f"{val:,}{suffix}" if val is not None else "—"
+        # 平台連結（放在卡片上方）
+        if d.get("platforms"):
+            links_html = "".join(
+                f'<a href="{url}" target="_blank" style="display:inline-block;margin:0 6px 6px 0;'
+                f'padding:3px 10px;background:#2a2a2a;border:1px solid #444;border-radius:12px;'
+                f'font-size:11px;color:#aaa;text-decoration:none;">{label}</a>'
+                for label, url in d["platforms"]
+            )
+            st.markdown(f'<div style="margin-bottom:4px;">{links_html}</div>', unsafe_allow_html=True)
 
         st.markdown(f"""
         <div class="card" style="border-left:3px solid {d['color']};">
@@ -641,18 +633,6 @@ with tab3:
         </div>
         """, unsafe_allow_html=True)
 
-        if d.get("platforms"):
-            links_html = "".join(
-                f'<a href="{url}" target="_blank" style="display:inline-block;margin:4px 6px 4px 0;'
-                f'padding:3px 10px;background:#2a2a2a;border:1px solid #444;border-radius:12px;'
-                f'font-size:11px;color:#aaa;text-decoration:none;">{label}</a>'
-                for label, url in d["platforms"]
-            )
-            st.markdown(
-                f'<div style="margin-bottom:8px;">{links_html}</div>',
-                unsafe_allow_html=True,
-            )
-
         if d.get("highlights"):
             import streamlit.components.v1 as components
             items_html = ""
@@ -683,4 +663,4 @@ with tab3:
             components.html(highlight_html, height=len(d["highlights"]) * 100 + 60, scrolling=False)
 
 
-    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 · IG 數據監控</div>", unsafe_allow_html=True)
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 · 社群數據監控</div>", unsafe_allow_html=True)
