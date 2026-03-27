@@ -96,7 +96,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-tab1, tab2 = st.tabs(["🎭 角色 IP 档案", "📋 专案进度"])
+tab1, tab2, tab3 = st.tabs(["🎭 角色 IP 档案", "📋 专案进度", "📊 IG 数据"])
 
 
 # ════════════════════════════════════════════════════════
@@ -410,3 +410,205 @@ with tab2:
     """, unsafe_allow_html=True)
 
     st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 · 专案进度追踪</div>", unsafe_allow_html=True)
+
+
+# ════════════════════════════════════════════════════════
+# TAB 3：IG 数据
+# ════════════════════════════════════════════════════════
+with tab3:
+
+    st.markdown("<div style='margin-bottom:20px;'></div>", unsafe_allow_html=True)
+
+    # ── 数据说明 ─────────────────────────────────────────
+    st.markdown("""
+    <div style="background:#242424;border:1px solid #3a3a3a;border-radius:8px;padding:12px 18px;margin-bottom:20px;font-size:12px;color:#666;">
+      ⚠️ 目前为手动填写数据，尚未接自动爬虫。数据以最后人工核对时间为准。
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── IG 数据（手动维护） ──────────────────────────────
+    IG_DATA = [
+        {
+            "name": "林浅浅",
+            "en_name": "Lin Qianqian",
+            "ig": "@qianqian.hanfu",
+            "ig_url": "https://www.instagram.com/qianqian.hanfu/",
+            "color": "#FFB300",
+            "status": "active",
+            "followers": 5136,
+            "following": None,
+            "posts": None,
+            "avg_likes": None,
+            "avg_comments": None,
+            "last_post": None,
+            "note": "主帳號，目前最活躍",
+            "updated": "2026-03-25",
+        },
+        {
+            "name": "王芷涵",
+            "en_name": "Céline Wang",
+            "ig": "@celineparisasia",
+            "ig_url": "https://www.instagram.com/celineparisasia/",
+            "color": "#7C6BDB",
+            "status": "new",
+            "followers": 223,
+            "following": None,
+            "posts": None,
+            "avg_likes": None,
+            "avg_comments": None,
+            "last_post": None,
+            "note": "新帳號，剛建立",
+            "updated": "2026-03-25",
+        },
+        {
+            "name": "顧染",
+            "en_name": "Gu Ran",
+            "ig": None,
+            "ig_url": None,
+            "color": "#E879A0",
+            "status": "pending",
+            "followers": None,
+            "following": None,
+            "posts": None,
+            "avg_likes": None,
+            "avg_comments": None,
+            "last_post": None,
+            "note": "帳號待建立",
+            "updated": None,
+        },
+        {
+            "name": "胡芊璐",
+            "en_name": "Hu Qianlu",
+            "ig": None,
+            "ig_url": None,
+            "color": "#26C6DA",
+            "status": "pending",
+            "followers": None,
+            "following": None,
+            "posts": None,
+            "avg_likes": None,
+            "avg_comments": None,
+            "last_post": None,
+            "note": "帳號待建立",
+            "updated": None,
+        },
+        {
+            "name": "倪妮",
+            "en_name": "Ni Ni",
+            "ig": None,
+            "ig_url": None,
+            "color": "#4CAF50",
+            "status": "pending",
+            "followers": None,
+            "following": None,
+            "posts": None,
+            "avg_likes": None,
+            "avg_comments": None,
+            "last_post": None,
+            "note": "帳號待建立",
+            "updated": None,
+        },
+    ]
+
+    STATUS_LABEL = {
+        "active":  ("✅ 活躍", "#4CAF50"),
+        "new":     ("🆕 新帳號", "#7C6BDB"),
+        "pending": ("⏳ 待建立", "#555"),
+    }
+
+    # ── KPI 卡片：總追蹤數 ────────────────────────────────
+    total_followers = sum(d["followers"] for d in IG_DATA if d["followers"])
+    active_count = sum(1 for d in IG_DATA if d["status"] in ("active", "new"))
+
+    st.markdown(f"""
+    <div class="kpi-wrap">
+      <div class="kpi-card">
+        <div class="kpi-label">總追蹤人數</div>
+        <div class="kpi-value" style="color:#E879A0;">{total_followers:,}</div>
+        <div class="kpi-sub">所有角色合計</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">已開設帳號</div>
+        <div class="kpi-value" style="color:#FFB300;">{active_count} / 5</div>
+        <div class="kpi-sub">林浅浅・Céline</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">待建立帳號</div>
+        <div class="kpi-value" style="color:#555;">3 / 5</div>
+        <div class="kpi-sub">顾染・胡芊璐・倪妮</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">數據更新方式</div>
+        <div class="kpi-value" style="font-size:18px;color:#444;">手動</div>
+        <div class="kpi-sub">爬蟲接入後自動更新</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── 追蹤數長條圖 ─────────────────────────────────────
+    active_data = [d for d in IG_DATA if d["followers"] is not None]
+    if active_data:
+        fig_bar = go.Figure(go.Bar(
+            x=[d["name"] for d in active_data],
+            y=[d["followers"] for d in active_data],
+            marker_color=[d["color"] for d in active_data],
+            text=[f'{d["followers"]:,}' for d in active_data],
+            textposition="outside",
+        ))
+        fig_bar.update_layout(
+            height=280,
+            margin=dict(l=0, r=0, t=20, b=0),
+            plot_bgcolor="#242424",
+            paper_bgcolor="#242424",
+            font=dict(color="#aaa", size=13),
+            xaxis=dict(gridcolor="#333", linecolor="#333"),
+            yaxis=dict(gridcolor="#333", linecolor="#333", title="追蹤數"),
+            showlegend=False,
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
+
+    # ── 各角色明細卡片 ────────────────────────────────────
+    st.markdown("### 👤 各角色 IG 明細")
+
+    for d in IG_DATA:
+        status_text, status_color = STATUS_LABEL[d["status"]]
+        ig_link = f'<a href="{d["ig_url"]}" target="_blank" style="color:#888;font-size:12px;">{d["ig"]} ↗</a>' if d["ig"] else '<span style="color:#444;font-size:12px;">—</span>'
+        followers_str = f'{d["followers"]:,}' if d["followers"] is not None else "—"
+        updated_str = d["updated"] or "—"
+
+        def fmt_metric(val, suffix=""):
+            return f"{val:,}{suffix}" if val is not None else "—"
+
+        st.markdown(f"""
+        <div class="card" style="border-left:3px solid {d['color']};">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:18px;font-weight:700;color:#fff;">{d['name']}</span>
+              <span style="font-size:13px;color:#888;">{d['en_name']}</span>
+              {ig_link}
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="background:{status_color}22;border:1px solid {status_color};color:{status_color};
+                    border-radius:6px;padding:2px 10px;font-size:12px;">{status_text}</span>
+              <span style="font-size:11px;color:#444;">更新：{updated_str}</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">追蹤數</div>
+              <div style="font-size:22px;font-weight:700;color:{d['color']};">{followers_str}</div></div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">追蹤中</div>
+              <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['following'])}</div></div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">貼文數</div>
+              <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['posts'])}</div></div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">平均讚數</div>
+              <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['avg_likes'])}</div></div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">平均留言</div>
+              <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['avg_comments'])}</div></div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">最後貼文</div>
+              <div style="font-size:22px;font-weight:700;color:#aaa;">{d['last_post'] or '—'}</div></div>
+          </div>
+          {f'<div style="margin-top:10px;font-size:12px;color:#555;">備註：{d["note"]}</div>' if d["note"] else ""}
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 · IG 數據監控</div>", unsafe_allow_html=True)
