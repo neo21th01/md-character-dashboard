@@ -443,6 +443,15 @@ with tab3:
             "last_post": "2026-03-27",
             "note": "主帳號，目前最活躍",
             "updated": "2026-03-27",
+            "platforms": [
+                ("📸 IG",      "https://www.instagram.com/qianqian.hanfu/"),
+                ("🧵 Threads", "https://www.threads.com/@qianqian.hanfu"),
+                ("🎵 TikTok",  "https://www.tiktok.com/@qianqian.hanfu"),
+                ("▶️ YouTube", "https://www.youtube.com/@qianqian_hanfu"),
+                ("🔗 Linktree","https://linktr.ee/qianqian_hanfu"),
+                ("🔞 FansOne", "https://fansone.co/lazypiggy520"),
+                ("🔞 Patreon", "https://www.patreon.com/cw/qianqian_haofu"),
+            ],
             "highlights": [
                 {
                     "date": "2026-03-11",
@@ -456,8 +465,8 @@ with tab3:
         {
             "name": "王芷涵",
             "en_name": "Céline Wang",
-            "ig": "@celineparisasia",
-            "ig_url": "https://www.instagram.com/celineparisasia/",
+            "ig": "@celine_iso",
+            "ig_url": "https://www.instagram.com/celine_iso/",
             "color": "#7C6BDB",
             "status": "new",
             "followers": 223,
@@ -466,8 +475,35 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "新帳號，剛建立",
-            "updated": "2026-03-25",
+            "note": "舊帳號 @celineparisasia 被封，改為新帳",
+            "updated": "2026-03-27",
+            "platforms": [
+                ("📸 IG",      "https://www.instagram.com/celine_iso/"),
+                ("🧵 Threads", "https://www.threads.com/@celine_iso"),
+                ("🐦 X",       "https://x.com/celineparisasia"),
+                ("🔗 Linktree","https://linktr.ee/celineiso"),
+                ("🔞 FansOne", "https://fansone.co/candykissvip520"),
+                ("🔞 Patreon", "https://www.patreon.com/cw/CelineLin"),
+            ],
+        },
+        {
+            "name": "胡芊璐",
+            "en_name": "Hu Qianlu",
+            "ig": "@hu_maturemommy",
+            "ig_url": "https://www.instagram.com/hu_maturemommy/",
+            "color": "#26C6DA",
+            "status": "new",
+            "followers": None,
+            "following": None,
+            "posts": None,
+            "avg_likes": None,
+            "avg_comments": None,
+            "last_post": None,
+            "note": "IG 剛建立",
+            "updated": "2026-03-27",
+            "platforms": {
+                "ig": ("📸 IG", "https://www.instagram.com/hu_maturemommy/"),
+            },
         },
         {
             "name": "顧染",
@@ -485,22 +521,7 @@ with tab3:
             "note": "帳號待建立",
             "updated": None,
         },
-        {
-            "name": "胡芊璐",
-            "en_name": "Hu Qianlu",
-            "ig": None,
-            "ig_url": None,
-            "color": "#26C6DA",
-            "status": "pending",
-            "followers": None,
-            "following": None,
-            "posts": None,
-            "avg_likes": None,
-            "avg_comments": None,
-            "last_post": None,
-            "note": "帳號待建立",
-            "updated": None,
-        },
+
         {
             "name": "倪妮",
             "en_name": "Ni Ni",
@@ -619,6 +640,18 @@ with tab3:
           {f'<div style="margin-top:10px;font-size:12px;color:#555;">備註：{d["note"]}</div>' if d["note"] else ""}
         </div>
         """, unsafe_allow_html=True)
+
+        if d.get("platforms"):
+            links_html = "".join(
+                f'<a href="{url}" target="_blank" style="display:inline-block;margin:4px 6px 4px 0;'
+                f'padding:3px 10px;background:#2a2a2a;border:1px solid #444;border-radius:12px;'
+                f'font-size:11px;color:#aaa;text-decoration:none;">{label}</a>'
+                for label, url in d["platforms"]
+            )
+            st.markdown(
+                f'<div style="margin-bottom:8px;">{links_html}</div>',
+                unsafe_allow_html=True,
+            )
 
         if d.get("highlights"):
             import streamlit.components.v1 as components

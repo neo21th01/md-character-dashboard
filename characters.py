@@ -8,6 +8,15 @@ CHARACTERS = [
         "rank_color": "#FFB300",
         "ig": "@qianqian.hanfu",
         "ig_url": "https://www.instagram.com/qianqian.hanfu/",
+        "platforms": {
+            "linktree":  "https://linktr.ee/qianqian_hanfu",
+            "ig":        "https://www.instagram.com/qianqian.hanfu/",
+            "threads":   "https://www.threads.com/@qianqian.hanfu",
+            "tiktok":    "https://www.tiktok.com/@qianqian.hanfu",
+            "youtube":   "https://www.youtube.com/@qianqian_hanfu",
+            "fansone":   "https://fansone.co/lazypiggy520",
+            "patreon":   "https://www.patreon.com/cw/qianqian_haofu",
+        },
         "images": [
             "assets/characters/linqianqian_1.jpg",
             "assets/characters/linqianqian_2.jpg",
@@ -81,8 +90,16 @@ CHARACTERS = [
         "en_name": "Céline Wang",
         "rank": "A",
         "rank_color": "#7C6BDB",
-        "ig": "@celineparisasia",
-        "ig_url": "https://www.instagram.com/celineparisasia/",
+        "ig": "@celine_iso",
+        "ig_url": "https://www.instagram.com/celine_iso/",
+        "platforms": {
+            "ig":       "https://www.instagram.com/celine_iso/",
+            "threads":  "https://www.threads.com/@celine_iso",
+            "x":        "https://x.com/celineparisasia",
+            "linktree": "https://linktr.ee/celineiso",
+            "fansone":  "https://fansone.co/candykissvip520",
+            "patreon":  "https://www.patreon.com/cw/CelineLin",
+        },
         "images": [
             "assets/characters/celine_1.jpg",
             "assets/characters/celine_2.jpg",
@@ -158,8 +175,11 @@ CHARACTERS = [
         "en_name": "Hu Qianlu",
         "rank": "S",
         "rank_color": "#FFB300",
-        "ig": None,
-        "ig_url": None,
+        "ig": "@hu_maturemommy",
+        "ig_url": "https://www.instagram.com/hu_maturemommy/",
+        "platforms": {
+            "ig": "https://www.instagram.com/hu_maturemommy/",
+        },
         "images": [
             "assets/characters/huqianlu_1.jpg",
             "assets/characters/huqianlu_2.jpg",
