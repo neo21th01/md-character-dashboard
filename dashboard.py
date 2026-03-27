@@ -438,9 +438,9 @@ with tab3:
             "followers": 9196,
             "following": 14,
             "posts": 16,
-            "avg_likes": None,
-            "avg_comments": None,
-            "last_post": None,
+            "avg_likes": 1767,
+            "avg_comments": 22,
+            "last_post": "2026-03-27",
             "note": "主帳號，目前最活躍",
             "updated": "2026-03-27",
             "highlights": [
