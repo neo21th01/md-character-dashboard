@@ -443,6 +443,15 @@ with tab3:
             "last_post": None,
             "note": "主帳號，目前最活躍",
             "updated": "2026-03-27",
+            "highlights": [
+                {
+                    "date": "2026-03-11",
+                    "content": "也是换我cha了！！😁😁\n#nobatidão #JennieNoBatidão #DanceCover #funkdance #nobatidaochallenge",
+                    "likes": 14000,
+                    "comments": 77,
+                    "views": 224000,
+                },
+            ],
         },
         {
             "name": "王芷涵",
@@ -610,5 +619,33 @@ with tab3:
           {f'<div style="margin-top:10px;font-size:12px;color:#555;">備註：{d["note"]}</div>' if d["note"] else ""}
         </div>
         """, unsafe_allow_html=True)
+
+        if d.get("highlights"):
+            items_html = ""
+            for h in d["highlights"]:
+                likes_str = f'{h["likes"] // 10000}萬+' if h["likes"] >= 10000 else str(h["likes"])
+                views_str = f'{h["views"] // 10000}萬+' if h["views"] >= 10000 else str(h["views"])
+                content_html = h["content"].replace("\n", "<br>")
+                items_html += f"""
+                <div style="background:#1a1a1a;border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                    <div style="flex:1;">
+                      <div style="font-size:11px;color:#666;margin-bottom:4px;">{h['date']}</div>
+                      <div style="font-size:12px;color:#aaa;line-height:1.5;">{content_html}</div>
+                    </div>
+                    <div style="display:flex;gap:16px;flex-shrink:0;margin-left:12px;">
+                      <div style="text-align:center;"><div style="font-size:11px;color:#666;">❤️ 讚</div><div style="font-size:15px;font-weight:700;color:#E879A0;">{likes_str}</div></div>
+                      <div style="text-align:center;"><div style="font-size:11px;color:#666;">💬 留言</div><div style="font-size:15px;font-weight:700;color:#aaa;">{h['comments']}</div></div>
+                      <div style="text-align:center;"><div style="font-size:11px;color:#666;">▶️ 觀看</div><div style="font-size:15px;font-weight:700;color:#FFB300;">{views_str}</div></div>
+                    </div>
+                  </div>
+                </div>"""
+            st.markdown(f"""
+            <div style="background:#242424;border:1px solid #3a3a3a;border-radius:10px;padding:16px 20px;margin-bottom:16px;border-left:3px solid {d['color']};">
+              <div style="font-size:11px;color:#E879A0;font-weight:600;margin-bottom:10px;">🔥 亮點貼文</div>
+              {items_html}
+            </div>
+            """, unsafe_allow_html=True)
+
 
     st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 · IG 數據監控</div>", unsafe_allow_html=True)
