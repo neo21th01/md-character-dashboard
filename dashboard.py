@@ -621,31 +621,33 @@ with tab3:
         """, unsafe_allow_html=True)
 
         if d.get("highlights"):
+            import streamlit.components.v1 as components
             items_html = ""
             for h in d["highlights"]:
                 likes_str = f'{h["likes"] // 10000}萬+' if h["likes"] >= 10000 else str(h["likes"])
                 views_str = f'{h["views"] // 10000}萬+' if h["views"] >= 10000 else str(h["views"])
                 content_html = h["content"].replace("\n", "<br>")
-                items_html += f"""
-                <div style="background:#1a1a1a;border-radius:8px;padding:10px 14px;margin-bottom:8px;">
-                  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-                    <div style="flex:1;">
-                      <div style="font-size:11px;color:#666;margin-bottom:4px;">{h['date']}</div>
-                      <div style="font-size:12px;color:#aaa;line-height:1.5;">{content_html}</div>
-                    </div>
-                    <div style="display:flex;gap:16px;flex-shrink:0;margin-left:12px;">
-                      <div style="text-align:center;"><div style="font-size:11px;color:#666;">❤️ 讚</div><div style="font-size:15px;font-weight:700;color:#E879A0;">{likes_str}</div></div>
-                      <div style="text-align:center;"><div style="font-size:11px;color:#666;">💬 留言</div><div style="font-size:15px;font-weight:700;color:#aaa;">{h['comments']}</div></div>
-                      <div style="text-align:center;"><div style="font-size:11px;color:#666;">▶️ 觀看</div><div style="font-size:15px;font-weight:700;color:#FFB300;">{views_str}</div></div>
-                    </div>
-                  </div>
-                </div>"""
-            st.markdown(f"""
-            <div style="background:#242424;border:1px solid #3a3a3a;border-radius:10px;padding:16px 20px;margin-bottom:16px;border-left:3px solid {d['color']};">
-              <div style="font-size:11px;color:#E879A0;font-weight:600;margin-bottom:10px;">🔥 亮點貼文</div>
-              {items_html}
-            </div>
-            """, unsafe_allow_html=True)
+                items_html += (
+                    '<div style="background:#1a1a1a;border-radius:8px;padding:10px 14px;margin-bottom:8px;">'
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">'
+                    '<div style="flex:1;">'
+                    f'<div style="font-size:11px;color:#666;margin-bottom:4px;">{h["date"]}</div>'
+                    f'<div style="font-size:12px;color:#aaa;line-height:1.5;">{content_html}</div>'
+                    '</div>'
+                    '<div style="display:flex;gap:16px;flex-shrink:0;margin-left:12px;">'
+                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">❤️ 讚</div><div style="font-size:15px;font-weight:700;color:#E879A0;">{likes_str}</div></div>'
+                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">💬 留言</div><div style="font-size:15px;font-weight:700;color:#aaa;">{h["comments"]}</div></div>'
+                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">▶️ 觀看</div><div style="font-size:15px;font-weight:700;color:#FFB300;">{views_str}</div></div>'
+                    '</div></div></div>'
+                )
+            highlight_html = (
+                f'<div style="font-family:sans-serif;background:#242424;border:1px solid #3a3a3a;border-radius:10px;'
+                f'padding:16px 20px;margin-bottom:8px;border-left:3px solid {d["color"]};">'
+                '<div style="font-size:11px;color:#E879A0;font-weight:600;margin-bottom:10px;">🔥 亮點貼文</div>'
+                + items_html +
+                '</div>'
+            )
+            components.html(highlight_html, height=len(d["highlights"]) * 100 + 60, scrolling=False)
 
 
     st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 · IG 數據監控</div>", unsafe_allow_html=True)
