@@ -254,19 +254,21 @@ with tab2:
     st.markdown("### 📅 专案甘特图")
 
     gantt_data = [
-        dict(Task="角色档案建立", Start="2026-03-01", Finish="2026-03-19", Stage="Phase 1 角色资产", Status="进行中"),
-        dict(Task="面部锚点确认", Start="2026-03-10", Finish="2026-03-25", Stage="Phase 1 角色资产", Status="进行中"),
+        dict(Task="角色档案建立（5位）", Start="2026-03-01", Finish="2026-03-31", Stage="Phase 1 角色资产", Status="已完成"),
+        dict(Task="面部锚点确认", Start="2026-03-10", Finish="2026-03-31", Stage="Phase 1 角色资产", Status="已完成"),
+        dict(Task="底图生成（倪妮完成）", Start="2026-03-15", Finish="2026-03-31", Stage="Phase 1 角色资产", Status="已完成"),
         dict(Task="商标申请（陆+台）", Start="2026-03-15", Finish="2026-04-30", Stage="Phase 1 角色资产", Status="待确认"),
         dict(Task="第一次角色资产会议", Start="2026-03-11", Finish="2026-03-12", Stage="Phase 1 角色资产", Status="已完成"),
         dict(Task="IG 自动化工作流建立", Start="2026-03-10", Finish="2026-03-18", Stage="Phase 2 AI生产", Status="已完成"),
-        dict(Task="首批概念图生成（各角色×20张）", Start="2026-03-19", Finish="2026-03-31", Stage="Phase 2 AI生产", Status="待开始"),
-        dict(Task="AI 影片脚本开发", Start="2026-04-01", Finish="2026-04-15", Stage="Phase 2 AI生产", Status="待开始"),
-        dict(Task="林浅浅 IG 首批内容发布", Start="2026-03-01", Finish="2026-04-30", Stage="Phase 3 社群布局", Status="进行中"),
-        dict(Task="Céline IG 首批内容发布", Start="2026-03-01", Finish="2026-04-30", Stage="Phase 3 社群布局", Status="进行中"),
-        dict(Task="胡芊璐社群帐号开设", Start="2026-03-20", Finish="2026-03-21", Stage="Phase 3 社群布局", Status="待开始"),
-        dict(Task="顾染社群帐号开设", Start="2026-03-25", Finish="2026-03-26", Stage="Phase 3 社群布局", Status="待开始"),
-        dict(Task="黄版流程开拓", Start="2026-03-16", Finish="2026-03-23", Stage="Phase 4 量化", Status="进行中"),
-        dict(Task="IP 授权框架建立", Start="2026-05-01", Finish="2026-05-31", Stage="Phase 4 量化", Status="待开始"),
+        dict(Task="首批概念图生成（各角色×20张）", Start="2026-03-19", Finish="2026-04-10", Stage="Phase 2 AI生产", Status="进行中"),
+        dict(Task="AI 爆款内容提报", Start="2026-03-31", Finish="2026-04-05", Stage="Phase 2 AI生产", Status="进行中"),
+        dict(Task="林浅浅 IG 持续运营（破万）", Start="2026-03-01", Finish="2026-04-30", Stage="Phase 3 社群布局", Status="进行中"),
+        dict(Task="Céline @celine_iso 首批内容", Start="2026-03-20", Finish="2026-03-31", Stage="Phase 3 社群布局", Status="已完成"),
+        dict(Task="胡芊璐 @hu_maturemommy 首批内容", Start="2026-03-20", Finish="2026-03-31", Stage="Phase 3 社群布局", Status="已完成"),
+        dict(Task="顾染社群帐号开设", Start="2026-04-01", Finish="2026-04-07", Stage="Phase 3 社群布局", Status="待确认"),
+        dict(Task="倪妮社群帐号开设", Start="2026-04-01", Finish="2026-04-07", Stage="Phase 3 社群布局", Status="待确认"),
+        dict(Task="黄版全平台开设（林浅浅）", Start="2026-03-16", Finish="2026-03-31", Stage="Phase 4 量化", Status="已完成"),
+        dict(Task="IG 自动爬虫接入 Dashboard", Start="2026-04-01", Finish="2026-04-20", Stage="Phase 4 量化", Status="待开始"),
     ]
 
     df_gantt = pd.DataFrame(gantt_data)
