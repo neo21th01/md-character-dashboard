@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MD AI角色库 Dashboard — 角色 IP 档案 + 专案进度
+智影AI角色库 Dashboard — 角色 IP 档案 + 专案进度
 """
 
 import streamlit as st
@@ -11,7 +11,7 @@ from datetime import datetime
 import os
 
 st.set_page_config(
-    page_title="MD AI角色库",
+    page_title="智影AI角色库",
     page_icon="🎭",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -90,7 +90,7 @@ h3 { color: #eee !important; font-size: 16px !important; margin-top: 28px !impor
 st.markdown(f"""
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
   <div>
-    <span style="font-size:24px;font-weight:700;color:#fff;">🎭 MD AI角色库</span>
+    <span style="font-size:24px;font-weight:700;color:#fff;">🎭 智影AI角色库</span>
   </div>
   <div style="font-size:13px;color:#555;">资料更新：{datetime.now().strftime('%Y/%m/%d %H:%M')}</div>
 </div>
@@ -214,7 +214,7 @@ with tab1:
             </div>
             """, unsafe_allow_html=True)
 
-    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 IP 资产系统</div>", unsafe_allow_html=True)
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 IP 资产系统</div>", unsafe_allow_html=True)
 
 
 # ════════════════════════════════════════════════════════
@@ -335,7 +335,7 @@ with tab2:
             "IG 自动化工作流建立",
             "AI 内容 IP 商业计划书（13页）",
             "第一次角色资产会议 3/11",
-            "MD AI角色库 Dashboard 建置",
+            "智影AI角色库 Dashboard 建置",
             "黄版流程开拓完成 3/23",
             "林浅浅黄版全平台开设完成",
             "林浅浅 IG 破万 3/31",
@@ -416,7 +416,7 @@ with tab2:
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 · 专案进度追踪</div>", unsafe_allow_html=True)
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 · 专案进度追踪</div>", unsafe_allow_html=True)
 
 
 # ════════════════════════════════════════════════════════
@@ -674,4 +674,4 @@ with tab3:
             components.html(highlight_html, height=len(d["highlights"]) * 100 + 60, scrolling=False)
 
 
-    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>MD AI角色库 · 社群數據監控</div>", unsafe_allow_html=True)
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 · 社群數據監控</div>", unsafe_allow_html=True)
