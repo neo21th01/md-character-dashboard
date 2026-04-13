@@ -96,11 +96,12 @@ CHARACTERS = [
             "ig": "https://www.instagram.com/hu_maturemommy/",
         },
         "images": [
+            "assets/characters/Gemini_Generated_Image_vawxojvawxojvawx.jpg",
             "assets/characters/huqianlu_1.jpg",
             "assets/characters/huqianlu_2.jpg",
-            "assets/characters/huqianlu_new_1.jpg",
-            "assets/characters/huqianlu_new_2.jpg",
-            "assets/characters/huqianlu_new_3.jpg",
+            "assets/characters/Gemini_Generated_Image_sy0tc4sy0tc4sy0t.jpg",
+            "assets/characters/Gemini_Generated_Image_g8r92jg8r92jg8r9.jpg",
+            "assets/characters/专业人像摄影_温柔pose_1_4K.png",
         ],
         "basic": [
             ("角色名称", "胡芊璐"),
