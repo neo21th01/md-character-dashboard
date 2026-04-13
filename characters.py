@@ -101,8 +101,11 @@ CHARACTERS = [
             "patreon":  "https://www.patreon.com/cw/CelineLin",
         },
         "images": [
-            "assets/characters/celine_1.jpg",
+            "assets/characters/celine_new_1.jpg",
             "assets/characters/celine_2.jpg",
+            "assets/characters/celine_new_2.jpg",
+            "assets/characters/celine_new_3.jpg",
+            "assets/characters/celine_new_4.jpg",
             "assets/characters/celine_sansitu_1.jpeg",
             "assets/characters/celine_sansitu_2.jpeg",
             "assets/characters/wangzhihan_sv3.jpg",
@@ -111,7 +114,7 @@ CHARACTERS = [
         "basic": [
             ("角色名称", "王芷涵（Céline wang）"),
             ("性别", "女"),
-            ("人气级别", "S / A / B / C（依数据后定）"),
+            ("人气级别", "A"),
             ("面部参考锚点", "法亚混血立体感、深棕眼、饱满唇、神秘异域气质（面部資料點此）"),
             ("IP 归属", "自有"),
             ("独占/共享", "可跨剧组（需审批）"),
