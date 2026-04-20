@@ -510,9 +510,10 @@ with tab3:
             "updated": "2026-04-13",
             "posts": 2,
             "following": 2,
-            "platforms": {
-                "ig": ("📸 IG", "https://www.instagram.com/hu_maturemommy/"),
-            },
+            "platforms": [
+                ("📸 IG",     "https://www.instagram.com/hu_maturemommy/"),
+                ("🎵 TikTok", "https://www.tiktok.com/@hu_maturemommy"),
+            ],
         },
         {
             "name": "顧染",
