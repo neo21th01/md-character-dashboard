@@ -18,6 +18,8 @@ CHARACTERS = [
             "patreon":   "https://www.patreon.com/cw/qianqian_haofu",
         },
         "images": [
+            "assets/characters/photo_2026-04-20 18.25.31.jpeg",
+            "assets/characters/photo_2026-04-20 18.25.56.jpeg",
             "assets/characters/linqianqian_1.jpg",
             "assets/characters/linqianqian_2.jpg",
         ],
