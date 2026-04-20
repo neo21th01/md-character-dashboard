@@ -93,7 +93,8 @@ CHARACTERS = [
         "ig": "@hu_maturemommy",
         "ig_url": "https://www.instagram.com/hu_maturemommy/",
         "platforms": {
-            "ig": "https://www.instagram.com/hu_maturemommy/",
+            "ig":     "https://www.instagram.com/hu_maturemommy/",
+            "tiktok": "https://www.tiktok.com/@hu_maturemommy",
         },
         "images": [
             "assets/characters/Gemini_Generated_Image_vawxojvawxojvawx.jpg",
