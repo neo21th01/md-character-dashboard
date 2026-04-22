@@ -680,10 +680,9 @@ with tab3:
 
 
 with tab4:
-    st.markdown("## 🎛️ 角色進度總控台")
+    st.markdown("## \U0001f39b\ufe0f 角色進度總控台")
     st.caption("資料來源：Google Sheets 自動同步")
 
-    # --- 連接 Google Sheets ---
     @st.cache_resource(ttl=60)
     def get_gsheet_connection():
         scopes = [
@@ -698,51 +697,59 @@ with tab4:
     try:
         client = get_gsheet_connection()
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
-        ws = sheet.worksheet("🎛️ 總控台")
+        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")
 
-        # --- 讀取角色進度數據 ---
         all_data = ws.get_all_values()
 
-        # 找到角色進度表頭（第4行）
-        header_row = None
-        req_header_row = None
-        for i, row in enumerate(all_data):
-            if len(row) > 0 and row[0] == "序號" and header_row is None:
-                header_row = i
-            if len(row) > 0 and "提領領用" in str(row[0]):
-                req_header_row = i
+        # 用欄位索引 (A=0, B=1, ... N=13)
+        # A:序號 B:角色名 C:建立者 D:建立日期 E:捏人公司 F:捏人狀態
+        # G:捏人完成日 H:Mr.B初審 I:初審日期 J:海哥審核 K:海哥審核日期
+        # L:目前狀態 M:入庫日期 N:備註
+        COL_NAME = 1
+        COL_CREATOR = 2
+        COL_NIEN_STATUS = 5
+        COL_MRB_REVIEW = 7
+        COL_MRB_DATE = 8
+        COL_BOSS_REVIEW = 9
+        COL_BOSS_DATE = 10
+        COL_STATUS = 11
+        COL_STOCK_DATE = 12
+        COL_NOTE = 13
 
-        if header_row is not None:
-            headers = all_data[header_row]
+        # 找表頭行和提領區
+        header_row_idx = None
+        req_start_idx = None
+        for i, row in enumerate(all_data):
+            if len(row) > 1 and row[0].strip() == "序號" and header_row_idx is None:
+                header_row_idx = i
+            if len(row) > 0 and "提領" in str(row[0]):
+                req_start_idx = i
+
+        if header_row_idx is not None:
             char_rows = []
-            for i in range(header_row + 1, len(all_data)):
-                row = all_data[i]
-                if req_header_row and i >= req_header_row:
+            for i in range(header_row_idx + 1, len(all_data)):
+                if req_start_idx and i >= req_start_idx:
                     break
-                if len(row) > 1 and row[1].strip():
-                    char_rows.append(row[:len(headers)])
+                row = all_data[i]
+                if len(row) > COL_NAME and row[COL_NAME].strip():
+                    char_rows.append(row)
 
             if char_rows:
-                df = pd.DataFrame(char_rows, columns=headers)
+                total = len(char_rows)
+                in_stock = sum(1 for r in char_rows if "已入庫" in str(r[COL_STATUS]))
+                in_review = sum(1 for r in char_rows if "待海哥審" in str(r[COL_STATUS]))
+                in_making = sum(1 for r in char_rows if "捏人中" in str(r[COL_STATUS]))
+                need_fix = sum(1 for r in char_rows if "駁回" in str(r[COL_STATUS]) or "需修改" in str(r[COL_STATUS]))
 
-                # --- 統計卡片 ---
-                total = len(df)
-                in_stock = len(df[df["目前狀態"].str.contains("已入庫", na=False)])
-                in_review = len(df[df["目前狀態"].str.contains("待海哥審", na=False)])
-                in_making = len(df[df["目前狀態"].str.contains("捏人中", na=False)])
-                rejected = len(df[df["目前狀態"].str.contains("駁回|需修改", na=False)])
-
-                col1, col2, col3, col4, col5 = st.columns(5)
-                col1.metric("📦 總角色數", total)
-                col2.metric("🟢 已入庫", in_stock)
-                col3.metric("🟣 待海哥審", in_review)
-                col4.metric("🟡 捏人中", in_making)
-                col5.metric("🔴 需修改/駁回", rejected)
+                c1, c2, c3, c4, c5 = st.columns(5)
+                c1.metric("總角色數", total)
+                c2.metric("已入庫", in_stock)
+                c3.metric("待海哥審", in_review)
+                c4.metric("捏人中", in_making)
+                c5.metric("需修改", need_fix)
 
                 st.markdown("---")
-
-                # --- 角色進度看板 ---
-                st.markdown("### 📊 角色狀態一覽")
+                st.markdown("### 角色狀態一覽")
 
                 status_colors = {
                     "已入庫": "#2ecc71",
@@ -755,17 +762,15 @@ with tab4:
                     "已下架": "#2c3e50",
                 }
 
-                for _, row in df.iterrows():
-                    name = row["角色名"]
-                    status = row["目前狀態"]
-                    note = row.get("備註", "")
-                    boss_review = row.get("海哥審核", "")
-                    mr_b_review = row.get("Mr.B 初審", "")
+                for row in char_rows:
+                    name = row[COL_NAME].strip()
+                    status = str(row[COL_STATUS]) if len(row) > COL_STATUS else ""
+                    note = str(row[COL_NOTE]) if len(row) > COL_NOTE else ""
 
                     color = "#95a5a6"
-                    for key, c in status_colors.items():
-                        if key in str(status):
-                            color = c
+                    for key, clr in status_colors.items():
+                        if key in status:
+                            color = clr
                             break
 
                     st.markdown(
@@ -774,73 +779,75 @@ with tab4:
                         f'<span style="font-size:1.2em; font-weight:bold;">{name}</span>'
                         f'&nbsp;&nbsp;<span style="background:{color}; color:white; padding:2px 10px; '
                         f'border-radius:12px; font-size:0.85em;">{status}</span>'
-                        f'{"&nbsp;&nbsp;📝 " + note if note else ""}'
+                        f'{"&nbsp;&nbsp; " + note if note else ""}'
                         f'</div>',
                         unsafe_allow_html=True,
                     )
 
                 st.markdown("---")
+                st.markdown("### 海哥審核專區")
 
-                # --- 海哥審核區 ---
-                st.markdown("### 👑 海哥審核專區")
+                pending = [r for r in char_rows if "待海哥審" in str(r[COL_STATUS])]
 
-                pending_boss = df[df["目前狀態"].str.contains("待海哥審", na=False)]
-
-                if pending_boss.empty:
-                    st.success("✅ 目前沒有待審核的角色")
+                if not pending:
+                    st.success("目前沒有待審核的角色")
                 else:
-                    boss_pwd = st.text_input("🔐 請輸入審核密碼", type="password", key="boss_pwd")
+                    boss_pwd = st.text_input("請輸入審核密碼", type="password", key="boss_pwd")
 
                     if boss_pwd == "haige888":
-                        st.success("✅ 身份驗證成功")
+                        st.success("身份驗證成功")
 
-                        for idx, row in pending_boss.iterrows():
-                            name = row["角色名"]
-                            with st.expander(f"📋 {name} — 待審核", expanded=True):
-                                st.write(f"**建立者：** {row['建立者']}")
-                                st.write(f"**初審結果：** {row['Mr.B 初審']}")
-                                st.write(f"**備註：** {row.get('備註', '')}")
+                        for row in pending:
+                            name = row[COL_NAME].strip()
+                            creator = row[COL_CREATOR] if len(row) > COL_CREATOR else ""
+                            mrb = row[COL_MRB_REVIEW] if len(row) > COL_MRB_REVIEW else ""
+                            note = row[COL_NOTE] if len(row) > COL_NOTE else ""
 
-                                c1, c2, c3 = st.columns(3)
-                                approve = c1.button(f"✅ 通過", key=f"approve_{name}")
-                                reject = c2.button(f"🔴 駁回", key=f"reject_{name}")
-                                adjust = c3.button(f"⚠️ 需調整", key=f"adjust_{name}")
+                            with st.expander(f"{name} — 待審核", expanded=True):
+                                st.write(f"**建立者：** {creator}")
+                                st.write(f"**初審結果：** {mrb}")
+                                if note:
+                                    st.write(f"**備註：** {note}")
+
+                                b1, b2, b3 = st.columns(3)
+                                approve = b1.button("✅ 通過", key=f"ap_{name}")
+                                reject = b2.button("駁回", key=f"rj_{name}")
+                                adjust = b3.button("需調整", key=f"ad_{name}")
 
                                 if approve or reject or adjust:
-                                    # 找到該角色在 Sheet 中的實際行號
-                                    all_values = ws.get_all_values()
-                                    for sheet_row_idx, sheet_row in enumerate(all_values):
-                                        if len(sheet_row) > 1 and sheet_row[1].strip() == name:
-                                            actual_row = sheet_row_idx + 1  # gspread 從1開始
-
+                                    all_vals = ws.get_all_values()
+                                    for si, sr in enumerate(all_vals):
+                                        if len(sr) > COL_NAME and sr[COL_NAME].strip() == name:
+                                            actual_row = si + 1
                                             today = datetime.now().strftime("%Y-%m-%d")
 
                                             if approve:
-                                                ws.update_cell(actual_row, 10, "✅ 通過")
-                                                ws.update_cell(actual_row, 11, today)
-                                                ws.update_cell(actual_row, 12, "🟢 已入庫")
-                                                ws.update_cell(actual_row, 13, today)
-                                                st.success(f"✅ {name} 已通過審核，已入庫！")
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "✅ 通過")
+                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "🟢 已入庫")
+                                                ws.update_cell(actual_row, COL_STOCK_DATE + 1, today)
+                                                st.success(f"{name} 已通過審核！")
                                             elif reject:
-                                                ws.update_cell(actual_row, 10, "🔴 駁回")
-                                                ws.update_cell(actual_row, 11, today)
-                                                ws.update_cell(actual_row, 12, "🔴 海哥駁回")
-                                                st.error(f"🔴 {name} 已駁回")
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "🔴 駁回")
+                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "🔴 海哥駁回")
+                                                st.error(f"{name} 已駁回")
                                             elif adjust:
-                                                ws.update_cell(actual_row, 10, "⚠️ 需調整")
-                                                ws.update_cell(actual_row, 11, today)
-                                                ws.update_cell(actual_row, 12, "🟠 初審需修改")
-                                                st.warning(f"⚠️ {name} 需調整")
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "⚠️ 需調整")
+                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "🟠 初審需修改")
+                                                st.warning(f"{name} 需調整")
 
                                             st.cache_resource.clear()
                                             st.rerun()
                                             break
                     elif boss_pwd:
-                        st.error("❌ 密碼錯誤")
-
+                        st.error("密碼錯誤")
+            else:
+                st.info("目前沒有角色資料")
         else:
-            st.warning("⚠️ 找不到總控台表頭，請確認 Google Sheets 格式")
+            st.warning("找不到總控台表頭，請確認 Google Sheets 格式")
 
     except Exception as e:
-        st.error(f"⚠️ 無法連接 Google Sheets：{str(e)}")
+        st.error(f"無法連接 Google Sheets：{str(e)}")
         st.info("請確認：\n1. 已在 Streamlit Secrets 設定 GCP 服務帳號金鑰\n2. Google Sheets 已分享給服務帳號\n3. 總控台分頁已建立")
