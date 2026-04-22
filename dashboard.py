@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime
 import os
+import json
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -689,7 +690,7 @@ with tab4:
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive",
         ]
-        creds_dict = dict(st.secrets["gcp_service_account"])
+        creds_dict = json.loads(st.secrets["gcp_service_account_json"])
         creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
         client = gspread.authorize(creds)
         return client
