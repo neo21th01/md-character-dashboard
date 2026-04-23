@@ -146,6 +146,7 @@ with tab1:
 
     ig_badge = f'<a href="{char["ig_url"]}" target="_blank" style="font-size:12px;color:#555;text-decoration:none;">{char["ig"]} ↗</a>' if char["ig"] else '<span style="font-size:12px;color:#444;">IG 待建立</span>'
     rank_label = "S 级" if char["rank"] == "S" else "A 级"
+    in_stock_badge = '<span style="background:#4CAF5022;border:1px solid #4CAF50;color:#4CAF50;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">✅ 已入庫</span>' if char.get("in_stock") else ''
     tags_html = "".join(f'<span class="tag {cls}">{t}</span>' for t, cls in CHAR_TAGS.get(char["name"], []))
 
     st.markdown(f"""
@@ -154,6 +155,7 @@ with tab1:
       <span style="font-size:14px;color:#888;">{char['en_name']}</span>
       <span style="background:{char['rank_color']}22;border:1px solid {char['rank_color']};color:{char['rank_color']};
             border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{rank_label}</span>
+      {in_stock_badge}
       {ig_badge}
     </div>
     <div style="margin-bottom:18px;">{tags_html}</div>
@@ -444,14 +446,14 @@ with tab3:
             "ig": "@lqq.u_u",
             "ig_url": "https://www.instagram.com/lqq.u_u/",
             "color": "#FFB300",
-            "status": "new",
-            "followers": 0,
+            "status": "active",
+            "followers": 62000,
             "following": 0,
             "posts": 0,
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "新帳號 @lqq.u_u，舊帳 @qianqian.hanfu 已被 ban，2026-04-23 重新開始",
+            "note": "新帳號 @lqq.u_u，2026-04-23 重新開始，快速破 6.2 萬",
             "updated": "2026-04-23",
             "platforms": [
                 ("📸 IG",      "https://www.instagram.com/lqq.u_u/"),
@@ -462,7 +464,7 @@ with tab3:
                 ("🔞 FansOne", "https://fansone.co/lazypiggy520"),
                 ("🔞 Patreon", "https://www.patreon.com/cw/qianqian_haofu"),
             ],
-                    },
+        },
         {
             "name": "王芷涵",
             "en_name": "Céline Wang",
