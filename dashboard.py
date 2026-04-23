@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-智影AI角色库 Dashboard — 角色 IP 档案 + 专案进度
+æºå½±AIè§è²åº Dashboard â è§è² IP æ¡£æ¡ + ä¸æ¡è¿åº¦
 """
 
 import streamlit as st
@@ -14,8 +14,8 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 st.set_page_config(
-    page_title="智影AI角色库",
-    page_icon="🎭",
+    page_title="æºå½±AIè§è²åº",
+    page_icon="ð­",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -89,22 +89,22 @@ h3 { color: #eee !important; font-size: 16px !important; margin-top: 28px !impor
 """, unsafe_allow_html=True)
 
 
-# ── 页首 ─────────────────────────────────────────────────
+# ââ é¡µé¦ âââââââââââââââââââââââââââââââââââââââââââââââââ
 st.markdown(f"""
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
   <div>
-    <span style="font-size:24px;font-weight:700;color:#fff;">🎭 智影AI角色库</span>
+    <span style="font-size:24px;font-weight:700;color:#fff;">ð­ æºå½±AIè§è²åº</span>
   </div>
-  <div style="font-size:13px;color:#555;">资料更新：{datetime.now().strftime('%Y/%m/%d %H:%M')}</div>
+  <div style="font-size:13px;color:#555;">èµææ´æ°ï¼{datetime.now().strftime('%Y/%m/%d %H:%M')}</div>
 </div>
 """, unsafe_allow_html=True)
 
-tab1, tab2, tab3, tab4 = st.tabs(["🎭 角色 IP 档案", "📋 专案进度", "📊 社群數據", "🎛️ 總控台"])
+tab1, tab2, tab3, tab4 = st.tabs(["ð­ è§è² IP æ¡£æ¡", "ð ä¸æ¡è¿åº¦", "ð ç¤¾ç¾¤æ¸æ", "ðï¸ ç¸½æ§å°"])
 
 
-# ════════════════════════════════════════════════════════
-# TAB 1：角色 IP 档案
-# ════════════════════════════════════════════════════════
+# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# TAB 1ï¼è§è² IP æ¡£æ¡
+# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 with tab1:
     from characters import CHARACTERS as ALL_CHARS
 
@@ -117,26 +117,26 @@ with tab1:
         return f'<table style="width:100%;border-collapse:collapse;">{rows_html}</table>'
 
     SECTION_LABELS = [
-        ("basic",      "▌ 基本信息"),
-        ("appearance", "一、基础外貌"),
-        ("persona",    "二、气质 / 人设"),
-        ("content",    "三、内容属性"),
-        ("world",      "四、世界观 / 背景"),
-        ("voice",      "五、声音 / 表演"),
-        ("business",   "六、商业 / 运营"),
+        ("basic",      "â åºæ¬ä¿¡æ¯"),
+        ("appearance", "ä¸ãåºç¡å¤è²"),
+        ("persona",    "äºãæ°è´¨ / äººè®¾"),
+        ("content",    "ä¸ãåå®¹å±æ§"),
+        ("world",      "åãä¸çè§ / èæ¯"),
+        ("voice",      "äºãå£°é³ / è¡¨æ¼"),
+        ("business",   "å­ãåä¸ / è¿è¥"),
     ]
 
     CHAR_TAGS = {
-        "林浅浅":     [("邻家感","tag-pink"),("汉服","tag-pink"),("傲娇","tag-pink"),("闷骚","tag-gray"),("Switch偏M","tag-gray")],
-        "倪妮":       [("运动系","tag-green"),("中国南方","tag-green"),("短发活力","tag-cyan"),("Switch偏S","tag-gray"),("反差感","tag-gray")],
-        "王芷涵":[("法式","tag-purple"),("混血","tag-purple"),("底片","tag-purple"),("疏离感","tag-gray"),("文艺","tag-gray")],
-        "顾染":       [("韩系冷艳","tag-amber"),("夜店女王","tag-amber"),("危险妩媚","tag-pink"),("强S","tag-gray"),("控制狂","tag-gray")],
-        "胡芊璐":     [("成熟人妻","tag-cyan"),("中式复古","tag-cyan"),("温柔风骚","tag-pink"),("偏M","tag-gray"),("台湾复古","tag-gray")],
+        "ææµæµ":     [("é»å®¶æ","tag-pink"),("æ±æ","tag-pink"),("å²å¨","tag-pink"),("é·éª","tag-gray"),("SwitchåM","tag-gray")],
+        "åªå¦®":       [("è¿å¨ç³»","tag-green"),("ä¸­å½åæ¹","tag-green"),("ç­åæ´»å","tag-cyan"),("SwitchåS","tag-gray"),("åå·®æ","tag-gray")],
+        "çè·æ¶µ":[("æ³å¼","tag-purple"),("æ··è¡","tag-purple"),("åºç","tag-purple"),("çç¦»æ","tag-gray"),("æèº","tag-gray")],
+        "é¡¾æ":       [("é©ç³»å·è³","tag-amber"),("å¤åºå¥³ç","tag-amber"),("å±é©å¦©åª","tag-pink"),("å¼ºS","tag-gray"),("æ§å¶ç","tag-gray")],
+        "è¡èç":     [("æçäººå¦»","tag-cyan"),("ä¸­å¼å¤å¤","tag-cyan"),("æ¸©æé£éª","tag-pink"),("åM","tag-gray"),("å°æ¹¾å¤å¤","tag-gray")],
     }
 
     char_names = [c["name"] for c in ALL_CHARS]
     selected = st.radio(
-        "选择角色",
+        "éæ©è§è²",
         char_names,
         horizontal=True,
         label_visibility="collapsed",
@@ -144,8 +144,8 @@ with tab1:
 
     char = next(c for c in ALL_CHARS if c["name"] == selected)
 
-    ig_badge = f'<a href="{char["ig_url"]}" target="_blank" style="font-size:12px;color:#555;text-decoration:none;">{char["ig"]} ↗</a>' if char["ig"] else '<span style="font-size:12px;color:#444;">IG 待建立</span>'
-    rank_label = "S 级" if char["rank"] == "S" else "A 级"
+    ig_badge = f'<a href="{char["ig_url"]}" target="_blank" style="font-size:12px;color:#555;text-decoration:none;">{char["ig"]} â</a>' if char["ig"] else '<span style="font-size:12px;color:#444;">IG å¾å»ºç«</span>'
+    rank_label = "S çº§" if char["rank"] == "S" else "A çº§"
     tags_html = "".join(f'<span class="tag {cls}">{t}</span>' for t, cls in CHAR_TAGS.get(char["name"], []))
 
     st.markdown(f"""
@@ -174,16 +174,16 @@ with tab1:
             st.markdown("""
             <div style="background:#1e1e1e;border:1px dashed #333;border-radius:10px;
                         height:220px;display:flex;align-items:center;justify-content:center;">
-              <span style="color:#444;font-size:13px;">底图待补充</span>
+              <span style="color:#444;font-size:13px;">åºå¾å¾è¡¥å</span>
             </div>
             """, unsafe_allow_html=True)
 
-        # 林浅浅专属：三视图 + 动漫图
-        if char["name"] == "林浅浅":
+        # ææµæµä¸å±ï¼ä¸è§å¾ + å¨æ¼«å¾
+        if char["name"] == "ææµæµ":
             sv_paths = [f"assets/characters/linqianqian_sv_{i}.jpg" for i in range(1,3)]
             sv_exists = [p for p in sv_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
             if sv_exists:
-                st.markdown('<div style="font-size:12px;color:#E879A0;font-weight:600;margin:14px 0 6px 0;">▌ 三视图</div>', unsafe_allow_html=True)
+                st.markdown('<div style="font-size:12px;color:#E879A0;font-weight:600;margin:14px 0 6px 0;">â ä¸è§å¾</div>', unsafe_allow_html=True)
                 sv_cols = st.columns(len(sv_exists))
                 for i, p in enumerate(sv_exists):
                     full_p = os.path.join(os.path.dirname(__file__), p)
@@ -192,7 +192,7 @@ with tab1:
             anime_paths = [f"assets/characters/linqianqian_anime_{i}.jpg" for i in range(1,3)]
             anime_exists = [p for p in anime_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
             if anime_exists:
-                st.markdown('<div style="font-size:12px;color:#7C6BDB;font-weight:600;margin:14px 0 6px 0;">▌ 动漫形象</div>', unsafe_allow_html=True)
+                st.markdown('<div style="font-size:12px;color:#7C6BDB;font-weight:600;margin:14px 0 6px 0;">â å¨æ¼«å½¢è±¡</div>', unsafe_allow_html=True)
                 an_cols = st.columns(len(anime_exists))
                 for i, p in enumerate(anime_exists):
                     full_p = os.path.join(os.path.dirname(__file__), p)
@@ -200,9 +200,9 @@ with tab1:
 
         st.markdown(f"""
         <div class="card" style="margin-top:12px;">
-          <div class="card-title">AI 生图 Prompt</div>
-          <div style="font-size:12px;color:#aaa;margin-bottom:8px;line-height:1.6;"><b style="color:#666;">中文：</b>{char['prompt_cn']}</div>
-          <div style="font-size:12px;color:#aaa;line-height:1.6;"><b style="color:#666;">EN：</b>{char['prompt_en']}</div>
+          <div class="card-title">AI çå¾ Prompt</div>
+          <div style="font-size:12px;color:#aaa;margin-bottom:8px;line-height:1.6;"><b style="color:#666;">ä¸­æï¼</b>{char['prompt_cn']}</div>
+          <div style="font-size:12px;color:#aaa;line-height:1.6;"><b style="color:#666;">ENï¼</b>{char['prompt_en']}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -217,61 +217,61 @@ with tab1:
             </div>
             """, unsafe_allow_html=True)
 
-    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 IP 资产系统</div>", unsafe_allow_html=True)
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>æºå½±AIè§è²åº IP èµäº§ç³»ç»</div>", unsafe_allow_html=True)
 
 
-# ════════════════════════════════════════════════════════
-# TAB 2：专案进度
-# ════════════════════════════════════════════════════════
+# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# TAB 2ï¼ä¸æ¡è¿åº¦
+# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 with tab2:
 
     st.markdown("<div style='margin-bottom:20px;'></div>", unsafe_allow_html=True)
 
-    # ── 整体进度 KPI ─────────────────────────────────────
+    # ââ æ´ä½è¿åº¦ KPI âââââââââââââââââââââââââââââââââââââ
     st.markdown("""
     <div class="kpi-wrap">
       <div class="kpi-card">
-        <div class="kpi-label">整体完成度</div>
+        <div class="kpi-label">æ´ä½å®æåº¦</div>
         <div class="kpi-value" style="color:#4CAF50;">50%</div>
-        <div class="kpi-sub">角色开发阶段</div>
+        <div class="kpi-sub">è§è²å¼åé¶æ®µ</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">角色已建档</div>
+        <div class="kpi-label">è§è²å·²å»ºæ¡£</div>
         <div class="kpi-value" style="color:#FFB300;">5 / 5</div>
-        <div class="kpi-sub">林浅浅・Céline・胡芊璐・顾染・倪妮</div>
+        <div class="kpi-sub">ææµæµã»CÃ©lineã»è¡èçã»é¡¾æã»åªå¦®</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">社群已开设</div>
+        <div class="kpi-label">ç¤¾ç¾¤å·²å¼è®¾</div>
         <div class="kpi-value" style="color:#E879A0;">3 / 5</div>
-        <div class="kpi-sub">林浅浅・Céline・胡芊璐</div>
+        <div class="kpi-sub">ææµæµã»CÃ©lineã»è¡èç</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">目标 Deadline</div>
+        <div class="kpi-label">ç®æ  Deadline</div>
         <div class="kpi-value" style="font-size:22px;color:#7C6BDB;">Q2 2026</div>
-        <div class="kpi-sub">首批内容上线</div>
+        <div class="kpi-sub">é¦æ¹åå®¹ä¸çº¿</div>
       </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── 甘特图 ───────────────────────────────────────────
-    st.markdown("### 📅 专案甘特图")
+    # ââ çç¹å¾ âââââââââââââââââââââââââââââââââââââââââââ
+    st.markdown("### ð ä¸æ¡çç¹å¾")
 
     gantt_data = [
-        dict(Task="角色档案建立（5位）", Start="2026-03-01", Finish="2026-03-31", Stage="Phase 1 角色资产", Status="已完成"),
-        dict(Task="面部锚点确认", Start="2026-03-10", Finish="2026-03-31", Stage="Phase 1 角色资产", Status="已完成"),
-        dict(Task="底图生成（倪妮完成）", Start="2026-03-15", Finish="2026-03-31", Stage="Phase 1 角色资产", Status="已完成"),
-        dict(Task="商标申请（陆+台）", Start="2026-03-15", Finish="2026-04-30", Stage="Phase 1 角色资产", Status="待确认"),
-        dict(Task="第一次角色资产会议", Start="2026-03-11", Finish="2026-03-12", Stage="Phase 1 角色资产", Status="已完成"),
-        dict(Task="IG 自动化工作流建立", Start="2026-03-10", Finish="2026-03-18", Stage="Phase 2 AI生产", Status="已完成"),
-        dict(Task="首批概念图生成（各角色×20张）", Start="2026-03-19", Finish="2026-04-10", Stage="Phase 2 AI生产", Status="进行中"),
-        dict(Task="AI 爆款内容提报", Start="2026-03-31", Finish="2026-04-05", Stage="Phase 2 AI生产", Status="进行中"),
-        dict(Task="林浅浅 IG 持续运营（破万）", Start="2026-03-01", Finish="2026-04-30", Stage="Phase 3 社群布局", Status="进行中"),
-        dict(Task="Céline @celine_iso 首批内容", Start="2026-03-20", Finish="2026-03-31", Stage="Phase 3 社群布局", Status="已完成"),
-        dict(Task="胡芊璐 @hu_maturemommy 首批内容", Start="2026-03-20", Finish="2026-03-31", Stage="Phase 3 社群布局", Status="已完成"),
-        dict(Task="顾染社群帐号开设", Start="2026-04-01", Finish="2026-04-07", Stage="Phase 3 社群布局", Status="待确认"),
-        dict(Task="倪妮社群帐号开设", Start="2026-04-01", Finish="2026-04-07", Stage="Phase 3 社群布局", Status="待确认"),
-        dict(Task="黄版全平台开设（林浅浅）", Start="2026-03-16", Finish="2026-03-31", Stage="Phase 4 量化", Status="已完成"),
-        dict(Task="IG 自动爬虫接入 Dashboard", Start="2026-04-01", Finish="2026-04-20", Stage="Phase 4 量化", Status="待开始"),
+        dict(Task="è§è²æ¡£æ¡å»ºç«ï¼5ä½ï¼", Start="2026-03-01", Finish="2026-03-31", Stage="Phase 1 è§è²èµäº§", Status="å·²å®æ"),
+        dict(Task="é¢é¨éç¹ç¡®è®¤", Start="2026-03-10", Finish="2026-03-31", Stage="Phase 1 è§è²èµäº§", Status="å·²å®æ"),
+        dict(Task="åºå¾çæï¼åªå¦®å®æï¼", Start="2026-03-15", Finish="2026-03-31", Stage="Phase 1 è§è²èµäº§", Status="å·²å®æ"),
+        dict(Task="åæ ç³è¯·ï¼é+å°ï¼", Start="2026-03-15", Finish="2026-04-30", Stage="Phase 1 è§è²èµäº§", Status="å¾ç¡®è®¤"),
+        dict(Task="ç¬¬ä¸æ¬¡è§è²èµäº§ä¼è®®", Start="2026-03-11", Finish="2026-03-12", Stage="Phase 1 è§è²èµäº§", Status="å·²å®æ"),
+        dict(Task="IG èªå¨åå·¥ä½æµå»ºç«", Start="2026-03-10", Finish="2026-03-18", Stage="Phase 2 AIçäº§", Status="å·²å®æ"),
+        dict(Task="é¦æ¹æ¦å¿µå¾çæï¼åè§è²Ã20å¼ ï¼", Start="2026-03-19", Finish="2026-04-10", Stage="Phase 2 AIçäº§", Status="è¿è¡ä¸­"),
+        dict(Task="AI çæ¬¾åå®¹ææ¥", Start="2026-03-31", Finish="2026-04-05", Stage="Phase 2 AIçäº§", Status="è¿è¡ä¸­"),
+        dict(Task="ææµæµ IG æç»­è¿è¥ï¼ç ´ä¸ï¼", Start="2026-03-01", Finish="2026-04-30", Stage="Phase 3 ç¤¾ç¾¤å¸å±", Status="è¿è¡ä¸­"),
+        dict(Task="CÃ©line @celine_iso é¦æ¹åå®¹", Start="2026-03-20", Finish="2026-03-31", Stage="Phase 3 ç¤¾ç¾¤å¸å±", Status="å·²å®æ"),
+        dict(Task="è¡èç @hu_maturemommy é¦æ¹åå®¹", Start="2026-03-20", Finish="2026-03-31", Stage="Phase 3 ç¤¾ç¾¤å¸å±", Status="å·²å®æ"),
+        dict(Task="é¡¾æç¤¾ç¾¤å¸å·å¼è®¾", Start="2026-04-01", Finish="2026-04-07", Stage="Phase 3 ç¤¾ç¾¤å¸å±", Status="å¾ç¡®è®¤"),
+        dict(Task="åªå¦®ç¤¾ç¾¤å¸å·å¼è®¾", Start="2026-04-01", Finish="2026-04-07", Stage="Phase 3 ç¤¾ç¾¤å¸å±", Status="å¾ç¡®è®¤"),
+        dict(Task="é»çå¨å¹³å°å¼è®¾ï¼ææµæµï¼", Start="2026-03-16", Finish="2026-03-31", Stage="Phase 4 éå", Status="å·²å®æ"),
+        dict(Task="IG èªå¨ç¬è«æ¥å¥ Dashboard", Start="2026-04-01", Finish="2026-04-20", Stage="Phase 4 éå", Status="å¾å¼å§"),
     ]
 
     df_gantt = pd.DataFrame(gantt_data)
@@ -279,10 +279,10 @@ with tab2:
     df_gantt["Finish"] = pd.to_datetime(df_gantt["Finish"])
 
     color_map = {
-        "完成": "#4CAF50",
-        "进行中": "#FFB300",
-        "待确认": "#7C6BDB",
-        "待开始": "#444",
+        "å®æ": "#4CAF50",
+        "è¿è¡ä¸­": "#FFB300",
+        "å¾ç¡®è®¤": "#7C6BDB",
+        "å¾å¼å§": "#444",
     }
 
     fig_gantt = px.timeline(
@@ -299,69 +299,69 @@ with tab2:
         font=dict(color="#aaa", size=12),
         xaxis=dict(gridcolor="#333", linecolor="#333"),
         yaxis=dict(gridcolor="#333", linecolor="#333"),
-        legend=dict(bgcolor="#2d2d2d", bordercolor="#444", title="状态"),
+        legend=dict(bgcolor="#2d2d2d", bordercolor="#444", title="ç¶æ"),
         showlegend=True,
     )
     fig_gantt.add_vline(
         x=datetime.now().timestamp() * 1000,
         line_dash="dash", line_color="#E879A0", line_width=1.5,
-        annotation_text="今天", annotation_font_color="#E879A0",
+        annotation_text="ä»å¤©", annotation_font_color="#E879A0",
     )
     st.plotly_chart(fig_gantt, use_container_width=True)
 
-    # ── 看板 ─────────────────────────────────────────────
-    st.markdown("### 📌 任务看板")
+    # ââ çæ¿ âââââââââââââââââââââââââââââââââââââââââââââ
+    st.markdown("### ð ä»»å¡çæ¿")
 
     KANBAN = {
-        "🔴 待确认": [
-            "商标申请策略确认（陆+台）",
-            "顾染社群帐号开设",
-            "倪妮社群帐号开设",
+        "ð´ å¾ç¡®è®¤": [
+            "åæ ç³è¯·ç­ç¥ç¡®è®¤ï¼é+å°ï¼",
+            "é¡¾æç¤¾ç¾¤å¸å·å¼è®¾",
+            "åªå¦®ç¤¾ç¾¤å¸å·å¼è®¾",
         ],
-        "🟡 进行中": [
-            "林浅浅 IG 内容持续发布（破万🎉）",
-            "Céline IG 新帐号 @celine_iso 经营",
-            "胡芊璐 IG @hu_maturemommy 内容建立",
-            "3/31 AI 爆款内容提报",
-            "首批概念图生成（各角色×20张）",
+        "ð¡ è¿è¡ä¸­": [
+            "ææµæµ IG åå®¹æç»­åå¸ï¼ç ´ä¸ðï¼",
+            "CÃ©line IG æ°å¸å· @celine_iso ç»è¥",
+            "è¡èç IG @hu_maturemommy åå®¹å»ºç«",
+            "3/31 AI çæ¬¾åå®¹ææ¥",
+            "é¦æ¹æ¦å¿µå¾çæï¼åè§è²Ã20å¼ ï¼",
         ],
-        "🔵 待开始": [
-            "顾染社群帐号开设",
-            "倪妮社群帐号开设",
-            "IG 自动爬虫接入 Dashboard",
+        "ðµ å¾å¼å§": [
+            "é¡¾æç¤¾ç¾¤å¸å·å¼è®¾",
+            "åªå¦®ç¤¾ç¾¤å¸å·å¼è®¾",
+            "IG èªå¨ç¬è«æ¥å¥ Dashboard",
         ],
-        "✅ 已完成": [
-            "四大角色 IP 方向确定",
-            "角色档案建立（5位）",
-            "KPI 评分表建立",
-            "周报自动化系统 v3",
-            "IG 自动化工作流建立",
-            "AI 内容 IP 商业计划书（13页）",
-            "第一次角色资产会议 3/11",
-            "智影AI角色库 Dashboard 建置",
-            "黄版流程开拓完成 3/23",
-            "林浅浅黄版全平台开设完成",
-            "林浅浅 IG 破万 3/31",
-            "胡芊璐 IG 帐号开设 @hu_maturemommy",
-            "王芷涵 IG 新帐号 @celine_iso（原帐被ban）",
-            "王芷涵首批内容上线",
-            "胡芊璐首批内容上线",
-            "倪妮面部锚点 & 底图完成",
-            "Dashboard 社群数据页签上线",
+        "â å·²å®æ": [
+            "åå¤§è§è² IP æ¹åç¡®å®",
+            "è§è²æ¡£æ¡å»ºç«ï¼5ä½ï¼",
+            "KPI è¯åè¡¨å»ºç«",
+            "å¨æ¥èªå¨åç³»ç» v3",
+            "IG èªå¨åå·¥ä½æµå»ºç«",
+            "AI åå®¹ IP åä¸è®¡åä¹¦ï¼13é¡µï¼",
+            "ç¬¬ä¸æ¬¡è§è²èµäº§ä¼è®® 3/11",
+            "æºå½±AIè§è²åº Dashboard å»ºç½®",
+            "é»çæµç¨å¼æå®æ 3/23",
+            "ææµæµé»çå¨å¹³å°å¼è®¾å®æ",
+            "ææµæµ IG ç ´ä¸ 3/31",
+            "è¡èç IG å¸å·å¼è®¾ @hu_maturemommy",
+            "çè·æ¶µ IG æ°å¸å· @celine_isoï¼åå¸è¢«banï¼",
+            "çè·æ¶µé¦æ¹åå®¹ä¸çº¿",
+            "è¡èçé¦æ¹åå®¹ä¸çº¿",
+            "åªå¦®é¢é¨éç¹ & åºå¾å®æ",
+            "Dashboard ç¤¾ç¾¤æ°æ®é¡µç­¾ä¸çº¿",
         ],
     }
 
     col_colors = {
-        "🔴 待确认": "#c0392b22",
-        "🟡 进行中": "#FFB30022",
-        "🔵 待开始": "#7C6BDB22",
-        "✅ 已完成": "#4CAF5022",
+        "ð´ å¾ç¡®è®¤": "#c0392b22",
+        "ð¡ è¿è¡ä¸­": "#FFB30022",
+        "ðµ å¾å¼å§": "#7C6BDB22",
+        "â å·²å®æ": "#4CAF5022",
     }
     border_colors = {
-        "🔴 待确认": "#c0392b",
-        "🟡 进行中": "#FFB300",
-        "🔵 待开始": "#7C6BDB",
-        "✅ 已完成": "#4CAF50",
+        "ð´ å¾ç¡®è®¤": "#c0392b",
+        "ð¡ è¿è¡ä¸­": "#FFB300",
+        "ðµ å¾å¼å§": "#7C6BDB",
+        "â å·²å®æ": "#4CAF50",
     }
 
     cols = st.columns(4)
@@ -382,31 +382,31 @@ with tab2:
         </div>
         """, unsafe_allow_html=True)
 
-    # ── 角色进度矩阵 ─────────────────────────────────────
-    st.markdown("### 👤 角色开发进度")
+    # ââ è§è²è¿åº¦ç©éµ âââââââââââââââââââââââââââââââââââââ
+    st.markdown("### ð¤ è§è²å¼åè¿åº¦")
 
     char_progress = [
-        {"角色": "林浅浅",  "档案建立": "✅", "面部锚点": "✅", "底图生成": "✅", "社群开设": "✅", "首批内容": "✅", "等级": "S"},
-        {"角色": "王芷涵",  "档案建立": "✅", "面部锚点": "✅", "底图生成": "✅", "社群开设": "✅", "首批内容": "✅", "等级": "S"},
-        {"角色": "胡芊璐",  "档案建立": "✅", "面部锚点": "✅", "底图生成": "✅", "社群开设": "✅", "首批内容": "✅", "等级": "S"},
-        {"角色": "顾染",    "档案建立": "✅", "面部锚点": "✅", "底图生成": "⏳", "社群开设": "⏳", "首批内容": "⏳", "等级": "S"},
-        {"角色": "倪妮",    "档案建立": "✅", "面部锚点": "✅", "底图生成": "✅", "社群开设": "⏳", "首批内容": "⏳", "等级": "S"},
+        {"è§è²": "ææµæµ",  "æ¡£æ¡å»ºç«": "â", "é¢é¨éç¹": "â", "åºå¾çæ": "â", "ç¤¾ç¾¤å¼è®¾": "â", "é¦æ¹åå®¹": "â", "ç­çº§": "S"},
+        {"è§è²": "çè·æ¶µ",  "æ¡£æ¡å»ºç«": "â", "é¢é¨éç¹": "â", "åºå¾çæ": "â", "ç¤¾ç¾¤å¼è®¾": "â", "é¦æ¹åå®¹": "â", "ç­çº§": "S"},
+        {"è§è²": "è¡èç",  "æ¡£æ¡å»ºç«": "â", "é¢é¨éç¹": "â", "åºå¾çæ": "â", "ç¤¾ç¾¤å¼è®¾": "â", "é¦æ¹åå®¹": "â", "ç­çº§": "S"},
+        {"è§è²": "é¡¾æ",    "æ¡£æ¡å»ºç«": "â", "é¢é¨éç¹": "â", "åºå¾çæ": "â³", "ç¤¾ç¾¤å¼è®¾": "â³", "é¦æ¹åå®¹": "â³", "ç­çº§": "S"},
+        {"è§è²": "åªå¦®",    "æ¡£æ¡å»ºç«": "â", "é¢é¨éç¹": "â", "åºå¾çæ": "â", "ç¤¾ç¾¤å¼è®¾": "â³", "é¦æ¹åå®¹": "â³", "ç­çº§": "S"},
     ]
 
-    header = ["角色", "等级", "档案建立", "面部锚点", "底图生成", "社群开设", "首批内容"]
+    header = ["è§è²", "ç­çº§", "æ¡£æ¡å»ºç«", "é¢é¨éç¹", "åºå¾çæ", "ç¤¾ç¾¤å¼è®¾", "é¦æ¹åå®¹"]
     header_html = "".join(f'<th style="padding:10px 16px;color:#888;font-size:12px;font-weight:500;text-align:center;">{h}</th>' for h in header)
 
     rows_html = ""
     for c in char_progress:
-        lvl_color = "#FFB300" if c["等级"] == "S" else "#7C6BDB"
+        lvl_color = "#FFB300" if c["ç­çº§"] == "S" else "#7C6BDB"
         rows_html += f"""<tr style="border-top:1px solid #2a2a2a;">
-          <td style="padding:10px 16px;color:#fff;font-weight:600;">{c['角色']}</td>
-          <td style="padding:10px 16px;text-align:center;"><span style="color:{lvl_color};font-weight:700;">{c['等级']}</span></td>
-          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['档案建立']}</td>
-          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['面部锚点']}</td>
-          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['底图生成']}</td>
-          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['社群开设']}</td>
-          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['首批内容']}</td>
+          <td style="padding:10px 16px;color:#fff;font-weight:600;">{c['è§è²']}</td>
+          <td style="padding:10px 16px;text-align:center;"><span style="color:{lvl_color};font-weight:700;">{c['ç­çº§']}</span></td>
+          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['æ¡£æ¡å»ºç«']}</td>
+          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['é¢é¨éç¹']}</td>
+          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['åºå¾çæ']}</td>
+          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['ç¤¾ç¾¤å¼è®¾']}</td>
+          <td style="padding:10px 16px;text-align:center;font-size:16px;">{c['é¦æ¹åå®¹']}</td>
         </tr>"""
 
     st.markdown(f"""
@@ -415,31 +415,31 @@ with tab2:
         <thead><tr>{header_html}</tr></thead>
         <tbody>{rows_html}</tbody>
       </table>
-      <div style="margin-top:12px;font-size:12px;color:#555;">✅ 完成 &nbsp; ⏳ 进行中/待开始</div>
+      <div style="margin-top:12px;font-size:12px;color:#555;">â å®æ &nbsp; â³ è¿è¡ä¸­/å¾å¼å§</div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 · 专案进度追踪</div>", unsafe_allow_html=True)
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>æºå½±AIè§è²åº Â· ä¸æ¡è¿åº¦è¿½è¸ª</div>", unsafe_allow_html=True)
 
 
-# ════════════════════════════════════════════════════════
-# TAB 3：IG 数据
-# ════════════════════════════════════════════════════════
+# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# TAB 3ï¼IG æ°æ®
+# ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 with tab3:
 
     st.markdown("<div style='margin-bottom:20px;'></div>", unsafe_allow_html=True)
 
-    # ── 数据说明 ─────────────────────────────────────────
+    # ââ æ°æ®è¯´æ âââââââââââââââââââââââââââââââââââââââââ
     st.markdown("""
     <div style="background:#242424;border:1px solid #3a3a3a;border-radius:8px;padding:12px 18px;margin-bottom:20px;font-size:12px;color:#666;">
-      ⚠️ 目前为手动填写数据，尚未接自动爬虫。数据以最后人工核对时间为准。
+      â ï¸ ç®åä¸ºæå¨å¡«åæ°æ®ï¼å°æªæ¥èªå¨ç¬è«ãæ°æ®ä»¥æåäººå·¥æ ¸å¯¹æ¶é´ä¸ºåã
     </div>
     """, unsafe_allow_html=True)
 
-    # ── IG 数据（手动维护） ──────────────────────────────
+    # ââ IG æ°æ®ï¼æå¨ç»´æ¤ï¼ ââââââââââââââââââââââââââââââ
     IG_DATA = [
         {
-            "name": "林浅浅",
+            "name": "ææµæµ",
             "en_name": "Lin Qianqian",
             "ig": "@qianqian.hanfu",
             "ig_url": "https://www.instagram.com/qianqian.hanfu/",
@@ -451,21 +451,21 @@ with tab3:
             "avg_likes": 1767,
             "avg_comments": 22,
             "last_post": "2026-03-27",
-            "note": "主帳號，目前最活躍，4/13 破1.5萬",
+            "note": "ä¸»å¸³èï¼ç®åææ´»èºï¼4/13 ç ´1.5è¬",
             "updated": "2026-04-13",
             "platforms": [
-                ("📸 IG",      "https://www.instagram.com/qianqian.hanfu/"),
-                ("🧵 Threads", "https://www.threads.com/@qianqian.hanfu"),
-                ("🎵 TikTok",  "https://www.tiktok.com/@qianqian.hanfu"),
-                ("▶️ YouTube", "https://www.youtube.com/@qianqian_hanfu"),
-                ("🔗 Linktree","https://linktr.ee/qianqian_hanfu"),
-                ("🔞 FansOne", "https://fansone.co/lazypiggy520"),
-                ("🔞 Patreon", "https://www.patreon.com/cw/qianqian_haofu"),
+                ("ð¸ IG",      "https://www.instagram.com/qianqian.hanfu/"),
+                ("ð§µ Threads", "https://www.threads.com/@qianqian.hanfu"),
+                ("ðµ TikTok",  "https://www.tiktok.com/@qianqian.hanfu"),
+                ("â¶ï¸ YouTube", "https://www.youtube.com/@qianqian_hanfu"),
+                ("ð Linktree","https://linktr.ee/qianqian_hanfu"),
+                ("ð FansOne", "https://fansone.co/lazypiggy520"),
+                ("ð Patreon", "https://www.patreon.com/cw/qianqian_haofu"),
             ],
             "highlights": [
                 {
                     "date": "2026-03-11",
-                    "content": "也是换我cha了！！😁😁\n#nobatidão #JennieNoBatidão #DanceCover #funkdance #nobatidaochallenge",
+                    "content": "ä¹æ¯æ¢æchaäºï¼ï¼ðð\n#nobatidÃ£o #JennieNoBatidÃ£o #DanceCover #funkdance #nobatidaochallenge",
                     "likes": 14000,
                     "comments": 77,
                     "views": 224000,
@@ -473,8 +473,8 @@ with tab3:
             ],
         },
         {
-            "name": "王芷涵",
-            "en_name": "Céline Wang",
+            "name": "çè·æ¶µ",
+            "en_name": "CÃ©line Wang",
             "ig": "@celine.w_iso",
             "ig_url": "https://www.instagram.com/celine.w_iso/",
             "color": "#7C6BDB",
@@ -485,57 +485,57 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "全新帳號，舊帳 @celine_iso 已棄用",
+            "note": "å¨æ°å¸³èï¼èå¸³ @celine_iso å·²æ£ç¨",
             "updated": "2026-04-09",
             "platforms": [
-                ("📸 IG",      "https://www.instagram.com/celine.w_iso/"),
-                ("🧵 Threads", "https://www.threads.com/@celine_iso"),
-                ("🐦 X",       "https://x.com/celineparisasia"),
-                ("🔗 Linktree","https://linktr.ee/celineiso"),
-                ("🔞 FansOne", "https://fansone.co/candykissvip520"),
-                ("🔞 Patreon", "https://www.patreon.com/cw/CelineLin"),
+                ("ð¸ IG",      "https://www.instagram.com/celine.w_iso/"),
+                ("ð§µ Threads", "https://www.threads.com/@celine_iso"),
+                ("ð¦ X",       "https://x.com/celineparisasia"),
+                ("ð Linktree","https://linktr.ee/celineiso"),
+                ("ð FansOne", "https://fansone.co/candykissvip520"),
+                ("ð Patreon", "https://www.patreon.com/cw/CelineLin"),
             ],
         },
         {
-            "name": "胡芊璐",
-                    {
-                                    "name": "顾染",
-                                    "en_name": "Gu Ran",
-                                    "ig": "@good_ran__",
-                                    "ig_url": "https://www.instagram.com/good_ran__/",
-                                    "color": "#E05A5A",
-                                    "status": "active",
-                                    "followers": 168,
-                                    "following": 25,
-                                    "posts": 13,
-                                    "avg_likes": None,
-                                    "avg_comments": None,
-                                    "last_post": None,
-                                    "note": "部落客，今天想當誰？來許願",
-                                    "updated": "2026-04-23",
-                                    "platforms": [
-                                                        ("📸 IG", "https://www.instagram.com/good_ran__/"),
-                                    ],
-                    },
-                    {
-                                    "name": "倪妮",
-                                    "en_name": "Ni Ni",
-                                    "ig": "@nini_power99",
-                                    "ig_url": "https://www.instagram.com/nini_power99/",
-                                    "color": "#4AABDB",
-                                    "status": "active",
-                                    "followers": 896,
-                                    "following": 12,
-                                    "posts": 5,
-                                    "avg_likes": None,
-                                    "avg_comments": None,
-                                    "last_post": None,
-                                    "note": "我是Nini，本人經營，ENFP｜愛運動",
-                                    "updated": "2026-04-23",
-                                    "platforms": [
-                                                        ("📸 IG", "https://www.instagram.com/nini_power99/"),
-                                    ],
-                    },
+            "name": "顾染",
+            "en_name": "Gu Ran",
+            "ig": "@good_ran__",
+            "ig_url": "https://www.instagram.com/good_ran__/",
+            "color": "#E05A5A",
+            "status": "active",
+            "followers": 168,
+            "following": 25,
+            "posts": 13,
+            "avg_likes": None,
+            "avg_comments": None,
+            "last_post": None,
+            "note": "部落客，今天想當誰？來許願",
+            "updated": "2026-04-23",
+            "platforms": [
+                ("📸 IG", "https://www.instagram.com/good_ran__/"),
+            ],
+        },
+        {
+            "name": "倪妮",
+            "en_name": "Ni Ni",
+            "ig": "@nini_power99",
+            "ig_url": "https://www.instagram.com/nini_power99/",
+            "color": "#4AABDB",
+            "status": "active",
+            "followers": 896,
+            "following": 12,
+            "posts": 5,
+            "avg_likes": None,
+            "avg_comments": None,
+            "last_post": None,
+            "note": "我是Nini，本人經營，ENFP｜愛運動",
+            "updated": "2026-04-23",
+            "platforms": [
+                ("📸 IG", "https://www.instagram.com/nini_power99/"),
+            ],
+        },
+        {
+            "name": "è¡èç",
             "en_name": "Hu Qianlu",
             "ig": "@hu_maturemommy",
             "ig_url": "https://www.instagram.com/hu_maturemommy/",
@@ -547,17 +547,17 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "IG 穩定成長中",
+            "note": "IG ç©©å®æé·ä¸­",
             "updated": "2026-04-13",
             "posts": 2,
             "following": 2,
             "platforms": [
-                ("📸 IG",     "https://www.instagram.com/hu_maturemommy/"),
-                ("🎵 TikTok", "https://www.tiktok.com/@hu_maturemommy"),
+                ("ð¸ IG",     "https://www.instagram.com/hu_maturemommy/"),
+                ("ðµ TikTok", "https://www.tiktok.com/@hu_maturemommy"),
             ],
         },
         {
-            "name": "顧染",
+            "name": "é¡§æ",
             "en_name": "Gu Ran",
             "ig": None,
             "ig_url": None,
@@ -569,12 +569,12 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "帳號待建立",
+            "note": "å¸³èå¾å»ºç«",
             "updated": None,
         },
 
         {
-            "name": "倪妮",
+            "name": "åªå¦®",
             "en_name": "Ni Ni",
             "ig": None,
             "ig_url": None,
@@ -586,63 +586,63 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "帳號待建立",
+            "note": "å¸³èå¾å»ºç«",
             "updated": None,
         },
     ]
 
     STATUS_LABEL = {
-        "active":  ("✅ 活躍", "#4CAF50"),
-        "new":     ("🆕 新帳號", "#7C6BDB"),
-        "pending": ("⏳ 待建立", "#555"),
+        "active":  ("â æ´»èº", "#4CAF50"),
+        "new":     ("ð æ°å¸³è", "#7C6BDB"),
+        "pending": ("â³ å¾å»ºç«", "#555"),
     }
 
-    # ── KPI 卡片 ─────────────────────────────────────────
+    # ââ KPI å¡ç âââââââââââââââââââââââââââââââââââââââââ
     total_followers = sum(d["followers"] for d in IG_DATA if d["followers"])
-    active_names = "・".join(d["name"] for d in IG_DATA if d["status"] in ("active", "new"))
+    active_names = "ã»".join(d["name"] for d in IG_DATA if d["status"] in ("active", "new"))
     active_count = sum(1 for d in IG_DATA if d["status"] in ("active", "new"))
-    pending_names = "・".join(d["name"] for d in IG_DATA if d["status"] == "pending")
+    pending_names = "ã»".join(d["name"] for d in IG_DATA if d["status"] == "pending")
     pending_count = sum(1 for d in IG_DATA if d["status"] == "pending")
 
     st.markdown(f"""
     <div class="kpi-wrap">
       <div class="kpi-card">
-        <div class="kpi-label">總追蹤人數</div>
+        <div class="kpi-label">ç¸½è¿½è¹¤äººæ¸</div>
         <div class="kpi-value" style="color:#E879A0;">{total_followers:,}</div>
-        <div class="kpi-sub">所有角色合計</div>
+        <div class="kpi-sub">ææè§è²åè¨</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">已開設帳號</div>
+        <div class="kpi-label">å·²éè¨­å¸³è</div>
         <div class="kpi-value" style="color:#FFB300;">{active_count} / 5</div>
         <div class="kpi-sub">{active_names}</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">待建立帳號</div>
+        <div class="kpi-label">å¾å»ºç«å¸³è</div>
         <div class="kpi-value" style="color:#555;">{pending_count} / 5</div>
         <div class="kpi-sub">{pending_names}</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">數據更新方式</div>
-        <div class="kpi-value" style="font-size:18px;color:#444;">手動</div>
-        <div class="kpi-sub">爬蟲接入後自動更新</div>
+        <div class="kpi-label">æ¸ææ´æ°æ¹å¼</div>
+        <div class="kpi-value" style="font-size:18px;color:#444;">æå</div>
+        <div class="kpi-sub">ç¬è²æ¥å¥å¾èªåæ´æ°</div>
       </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── 各角色明細卡片 ────────────────────────────────────
-    st.markdown("### 👤 各角色社群明細")
+    # ââ åè§è²æç´°å¡ç ââââââââââââââââââââââââââââââââââââ
+    st.markdown("### ð¤ åè§è²ç¤¾ç¾¤æç´°")
 
     def fmt_metric(val):
-        return f"{val:,}" if val is not None else "—"
+        return f"{val:,}" if val is not None else "â"
 
     for d in IG_DATA:
         status_text, status_color = STATUS_LABEL[d["status"]]
         ig_link = (f'<a href="{d["ig_url"]}" target="_blank" style="color:#888;font-size:12px;">'
-                   f'{d["ig"]} ↗</a>') if d["ig"] else '<span style="color:#444;font-size:12px;">—</span>'
-        followers_str = f'{d["followers"]:,}' if d["followers"] is not None else "—"
-        updated_str = d["updated"] or "—"
+                   f'{d["ig"]} â</a>') if d["ig"] else '<span style="color:#444;font-size:12px;">â</span>'
+        followers_str = f'{d["followers"]:,}' if d["followers"] is not None else "â"
+        updated_str = d["updated"] or "â"
 
-        # 平台連結（放在卡片上方）
+        # å¹³å°é£çµï¼æ¾å¨å¡çä¸æ¹ï¼
         if d.get("platforms"):
             links_html = "".join(
                 f'<a href="{url}" target="_blank" style="display:inline-block;margin:0 6px 6px 0;'
@@ -663,24 +663,24 @@ with tab3:
             <div style="display:flex;align-items:center;gap:12px;">
               <span style="background:{status_color}22;border:1px solid {status_color};color:{status_color};
                     border-radius:6px;padding:2px 10px;font-size:12px;">{status_text}</span>
-              <span style="font-size:11px;color:#444;">更新：{updated_str}</span>
+              <span style="font-size:11px;color:#444;">æ´æ°ï¼{updated_str}</span>
             </div>
           </div>
           <div style="display:flex;gap:24px;flex-wrap:wrap;">
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">追蹤數</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">è¿½è¹¤æ¸</div>
               <div style="font-size:22px;font-weight:700;color:{d['color']};">{followers_str}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">追蹤中</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">è¿½è¹¤ä¸­</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['following'])}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">貼文數</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">è²¼ææ¸</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['posts'])}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">平均讚數</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">å¹³åè®æ¸</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['avg_likes'])}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">平均留言</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">å¹³åçè¨</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['avg_comments'])}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">最後貼文</div>
-              <div style="font-size:22px;font-weight:700;color:#aaa;">{d['last_post'] or '—'}</div></div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">æå¾è²¼æ</div>
+              <div style="font-size:22px;font-weight:700;color:#aaa;">{d['last_post'] or 'â'}</div></div>
           </div>
-          {f'<div style="margin-top:10px;font-size:12px;color:#555;">備註：{d["note"]}</div>' if d["note"] else ""}
+          {f'<div style="margin-top:10px;font-size:12px;color:#555;">åè¨»ï¼{d["note"]}</div>' if d["note"] else ""}
         </div>
         """, unsafe_allow_html=True)
 
@@ -688,8 +688,8 @@ with tab3:
             import streamlit.components.v1 as components
             items_html = ""
             for h in d["highlights"]:
-                likes_str = f'{h["likes"] // 10000}萬+' if h["likes"] >= 10000 else str(h["likes"])
-                views_str = f'{h["views"] // 10000}萬+' if h["views"] >= 10000 else str(h["views"])
+                likes_str = f'{h["likes"] // 10000}è¬+' if h["likes"] >= 10000 else str(h["likes"])
+                views_str = f'{h["views"] // 10000}è¬+' if h["views"] >= 10000 else str(h["views"])
                 content_html = h["content"].replace("\n", "<br>")
                 items_html += (
                     '<div style="background:#1a1a1a;border-radius:8px;padding:10px 14px;margin-bottom:8px;">'
@@ -699,27 +699,27 @@ with tab3:
                     f'<div style="font-size:12px;color:#aaa;line-height:1.5;">{content_html}</div>'
                     '</div>'
                     '<div style="display:flex;gap:16px;flex-shrink:0;margin-left:12px;">'
-                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">❤️ 讚</div><div style="font-size:15px;font-weight:700;color:#E879A0;">{likes_str}</div></div>'
-                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">💬 留言</div><div style="font-size:15px;font-weight:700;color:#aaa;">{h["comments"]}</div></div>'
-                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">▶️ 觀看</div><div style="font-size:15px;font-weight:700;color:#FFB300;">{views_str}</div></div>'
+                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">â¤ï¸ è®</div><div style="font-size:15px;font-weight:700;color:#E879A0;">{likes_str}</div></div>'
+                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">ð¬ çè¨</div><div style="font-size:15px;font-weight:700;color:#aaa;">{h["comments"]}</div></div>'
+                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">â¶ï¸ è§ç</div><div style="font-size:15px;font-weight:700;color:#FFB300;">{views_str}</div></div>'
                     '</div></div></div>'
                 )
             highlight_html = (
                 f'<div style="font-family:sans-serif;background:#242424;border:1px solid #3a3a3a;border-radius:10px;'
                 f'padding:16px 20px;margin-bottom:8px;border-left:3px solid {d["color"]};">'
-                '<div style="font-size:11px;color:#E879A0;font-weight:600;margin-bottom:10px;">🔥 亮點貼文</div>'
+                '<div style="font-size:11px;color:#E879A0;font-weight:600;margin-bottom:10px;">ð¥ äº®é»è²¼æ</div>'
                 + items_html +
                 '</div>'
             )
             components.html(highlight_html, height=len(d["highlights"]) * 100 + 60, scrolling=False)
 
 
-    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 · 社群數據監控</div>", unsafe_allow_html=True)
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>æºå½±AIè§è²åº Â· ç¤¾ç¾¤æ¸æç£æ§</div>", unsafe_allow_html=True)
 
 
 with tab4:
-    st.markdown("## \U0001f39b\ufe0f 角色進度總控台")
-    st.caption("資料來源：Google Sheets 自動同步")
+    st.markdown("## \U0001f39b\ufe0f è§è²é²åº¦ç¸½æ§å°")
+    st.caption("è³æä¾æºï¼Google Sheets èªååæ­¥")
 
     @st.cache_resource(ttl=60)
     def get_gsheet_connection():
@@ -735,14 +735,14 @@ with tab4:
     try:
         client = get_gsheet_connection()
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
-        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")
+        ws = sheet.worksheet("\U0001f39b\ufe0f ç¸½æ§å°")
 
         all_data = ws.get_all_values()
 
-        # 用欄位索引 (A=0, B=1, ... N=13)
-        # A:序號 B:角色名 C:建立者 D:建立日期 E:捏人公司 F:捏人狀態
-        # G:捏人完成日 H:Mr.B初審 I:初審日期 J:海哥審核 K:海哥審核日期
-        # L:目前狀態 M:入庫日期 N:備註
+        # ç¨æ¬ä½ç´¢å¼ (A=0, B=1, ... N=13)
+        # A:åºè B:è§è²å C:å»ºç«è D:å»ºç«æ¥æ E:æäººå¬å¸ F:æäººçæ
+        # G:æäººå®ææ¥ H:Mr.Båå¯© I:åå¯©æ¥æ J:æµ·å¥å¯©æ ¸ K:æµ·å¥å¯©æ ¸æ¥æ
+        # L:ç®åçæ M:å¥åº«æ¥æ N:åè¨»
         COL_NAME = 1
         COL_CREATOR = 2
         COL_NIEN_STATUS = 5
@@ -754,13 +754,13 @@ with tab4:
         COL_STOCK_DATE = 12
         COL_NOTE = 13
 
-        # 找表頭行和提領區
+        # æ¾è¡¨é ­è¡åæé å
         header_row_idx = None
         req_start_idx = None
         for i, row in enumerate(all_data):
-            if len(row) > 1 and row[0].strip() == "序號" and header_row_idx is None:
+            if len(row) > 1 and row[0].strip() == "åºè" and header_row_idx is None:
                 header_row_idx = i
-            if len(row) > 0 and "提領" in str(row[0]):
+            if len(row) > 0 and "æé " in str(row[0]):
                 req_start_idx = i
 
         if header_row_idx is not None:
@@ -774,30 +774,30 @@ with tab4:
 
             if char_rows:
                 total = len(char_rows)
-                in_stock = sum(1 for r in char_rows if "已入庫" in str(r[COL_STATUS]))
-                in_review = sum(1 for r in char_rows if "待海哥審" in str(r[COL_STATUS]))
-                in_making = sum(1 for r in char_rows if "捏人中" in str(r[COL_STATUS]))
-                need_fix = sum(1 for r in char_rows if "駁回" in str(r[COL_STATUS]) or "需修改" in str(r[COL_STATUS]))
+                in_stock = sum(1 for r in char_rows if "å·²å¥åº«" in str(r[COL_STATUS]))
+                in_review = sum(1 for r in char_rows if "å¾æµ·å¥å¯©" in str(r[COL_STATUS]))
+                in_making = sum(1 for r in char_rows if "æäººä¸­" in str(r[COL_STATUS]))
+                need_fix = sum(1 for r in char_rows if "é§å" in str(r[COL_STATUS]) or "éä¿®æ¹" in str(r[COL_STATUS]))
 
                 c1, c2, c3, c4, c5 = st.columns(5)
-                c1.metric("總角色數", total)
-                c2.metric("已入庫", in_stock)
-                c3.metric("待海哥審", in_review)
-                c4.metric("捏人中", in_making)
-                c5.metric("需修改", need_fix)
+                c1.metric("ç¸½è§è²æ¸", total)
+                c2.metric("å·²å¥åº«", in_stock)
+                c3.metric("å¾æµ·å¥å¯©", in_review)
+                c4.metric("æäººä¸­", in_making)
+                c5.metric("éä¿®æ¹", need_fix)
 
                 st.markdown("---")
-                st.markdown("### 角色狀態一覽")
+                st.markdown("### è§è²çæä¸è¦½")
 
                 status_colors = {
-                    "已入庫": "#2ecc71",
-                    "待海哥審": "#9b59b6",
-                    "捏人中": "#f39c12",
-                    "待初審": "#3498db",
-                    "駁回": "#e74c3c",
-                    "需修改": "#e67e22",
-                    "建立中": "#95a5a6",
-                    "已下架": "#2c3e50",
+                    "å·²å¥åº«": "#2ecc71",
+                    "å¾æµ·å¥å¯©": "#9b59b6",
+                    "æäººä¸­": "#f39c12",
+                    "å¾åå¯©": "#3498db",
+                    "é§å": "#e74c3c",
+                    "éä¿®æ¹": "#e67e22",
+                    "å»ºç«ä¸­": "#95a5a6",
+                    "å·²ä¸æ¶": "#2c3e50",
                 }
 
                 for row in char_rows:
@@ -823,17 +823,17 @@ with tab4:
                     )
 
                 st.markdown("---")
-                st.markdown("### 海哥審核專區")
+                st.markdown("### æµ·å¥å¯©æ ¸å°å")
 
-                pending = [r for r in char_rows if "待海哥審" in str(r[COL_STATUS])]
+                pending = [r for r in char_rows if "å¾æµ·å¥å¯©" in str(r[COL_STATUS])]
 
                 if not pending:
-                    st.success("目前沒有待審核的角色")
+                    st.success("ç®åæ²æå¾å¯©æ ¸çè§è²")
                 else:
-                    boss_pwd = st.text_input("請輸入審核密碼", type="password", key="boss_pwd")
+                    boss_pwd = st.text_input("è«è¼¸å¥å¯©æ ¸å¯ç¢¼", type="password", key="boss_pwd")
 
                     if boss_pwd == "haige888":
-                        st.success("身份驗證成功")
+                        st.success("èº«ä»½é©è­æå")
 
                         for row in pending:
                             name = row[COL_NAME].strip()
@@ -841,16 +841,16 @@ with tab4:
                             mrb = row[COL_MRB_REVIEW] if len(row) > COL_MRB_REVIEW else ""
                             note = row[COL_NOTE] if len(row) > COL_NOTE else ""
 
-                            with st.expander(f"{name} — 待審核", expanded=True):
-                                st.write(f"**建立者：** {creator}")
-                                st.write(f"**初審結果：** {mrb}")
+                            with st.expander(f"{name} â å¾å¯©æ ¸", expanded=True):
+                                st.write(f"**å»ºç«èï¼** {creator}")
+                                st.write(f"**åå¯©çµæï¼** {mrb}")
                                 if note:
-                                    st.write(f"**備註：** {note}")
+                                    st.write(f"**åè¨»ï¼** {note}")
 
                                 b1, b2, b3 = st.columns(3)
-                                approve = b1.button("✅ 通過", key=f"ap_{name}")
-                                reject = b2.button("駁回", key=f"rj_{name}")
-                                adjust = b3.button("需調整", key=f"ad_{name}")
+                                approve = b1.button("â éé", key=f"ap_{name}")
+                                reject = b2.button("é§å", key=f"rj_{name}")
+                                adjust = b3.button("éèª¿æ´", key=f"ad_{name}")
 
                                 if approve or reject or adjust:
                                     all_vals = ws.get_all_values()
@@ -860,32 +860,32 @@ with tab4:
                                             today = datetime.now().strftime("%Y-%m-%d")
 
                                             if approve:
-                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "✅ 通過")
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "â éé")
                                                 ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
-                                                ws.update_cell(actual_row, COL_STATUS + 1, "🟢 已入庫")
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "ð¢ å·²å¥åº«")
                                                 ws.update_cell(actual_row, COL_STOCK_DATE + 1, today)
-                                                st.success(f"{name} 已通過審核！")
+                                                st.success(f"{name} å·²ééå¯©æ ¸ï¼")
                                             elif reject:
-                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "🔴 駁回")
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "ð´ é§å")
                                                 ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
-                                                ws.update_cell(actual_row, COL_STATUS + 1, "🔴 海哥駁回")
-                                                st.error(f"{name} 已駁回")
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "ð´ æµ·å¥é§å")
+                                                st.error(f"{name} å·²é§å")
                                             elif adjust:
-                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "⚠️ 需調整")
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "â ï¸ éèª¿æ´")
                                                 ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
-                                                ws.update_cell(actual_row, COL_STATUS + 1, "🟠 初審需修改")
-                                                st.warning(f"{name} 需調整")
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "ð  åå¯©éä¿®æ¹")
+                                                st.warning(f"{name} éèª¿æ´")
 
                                             st.cache_resource.clear()
                                             st.rerun()
                                             break
                     elif boss_pwd:
-                        st.error("密碼錯誤")
+                        st.error("å¯ç¢¼é¯èª¤")
             else:
-                st.info("目前沒有角色資料")
+                st.info("ç®åæ²æè§è²è³æ")
         else:
-            st.warning("找不到總控台表頭，請確認 Google Sheets 格式")
+            st.warning("æ¾ä¸å°ç¸½æ§å°è¡¨é ­ï¼è«ç¢ºèª Google Sheets æ ¼å¼")
 
     except Exception as e:
-        st.error(f"無法連接 Google Sheets：{str(e)}")
-        st.info("請確認：\n1. 已在 Streamlit Secrets 設定 GCP 服務帳號金鑰\n2. Google Sheets 已分享給服務帳號\n3. 總控台分頁已建立")
+        st.error(f"ç¡æ³é£æ¥ Google Sheetsï¼{str(e)}")
+        st.info("è«ç¢ºèªï¼\n1. å·²å¨ Streamlit Secrets è¨­å® GCP æåå¸³èéé°\n2. Google Sheets å·²åäº«çµ¦æåå¸³è\n3. ç¸½æ§å°åé å·²å»ºç«")
