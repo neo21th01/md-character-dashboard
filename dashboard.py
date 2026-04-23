@@ -99,6 +99,64 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# ════════════════════════════════════════════════════════
+# 總控台狀態同步（讓 Tab 1 顯示海哥審核結果）
+# ════════════════════════════════════════════════════════
+@st.cache_data(ttl=120)
+def _load_stock_status_from_sheet():
+    """從總控台讀取每位角色的狀態。失敗回傳 {}。"""
+    try:
+        scopes = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive",
+        ]
+        creds_dict = json.loads(st.secrets["gcp_service_account_json"])
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+        client = gspread.authorize(creds)
+        sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
+        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")
+        all_vals = ws.get_all_values()
+        COL_NAME, COL_STATUS = 1, 11
+        status_map = {}
+        for row in all_vals[2:]:
+            if len(row) <= COL_STATUS:
+                continue
+            name = row[COL_NAME].strip()
+            status = str(row[COL_STATUS]).strip()
+            if not name:
+                continue
+            if status_map.get(name) == "已入庫":
+                continue
+            if "已入庫" in status:
+                status_map[name] = "已入庫"
+            elif "待海哥審" in status:
+                status_map[name] = "待審"
+            elif "駁回" in status:
+                status_map[name] = "駁回"
+            elif "需調整" in status or "需修改" in status:
+                status_map[name] = "需調整"
+            elif "捏人中" in status:
+                status_map[name] = "捏人中"
+        return status_map
+    except Exception:
+        return {}
+
+
+_NAME_ALIASES = {
+    "林浅浅": ["林淺淺"], "林淺淺": ["林浅浅"],
+    "顾染":   ["顧染"],   "顧染":   ["顾染"],
+}
+
+
+def get_char_stock_status(char_name, fallback_in_stock=False):
+    """回傳角色的總控台狀態字串；找不到時若 fallback_in_stock=True 回『已入庫』。"""
+    status_map = _load_stock_status_from_sheet()
+    for c in [char_name] + _NAME_ALIASES.get(char_name, []):
+        if c in status_map:
+            return status_map[c]
+    return "已入庫" if fallback_in_stock else None
+
+
 tab1, tab2, tab3, tab4 = st.tabs(["🎭 角色 IP 档案", "📋 专案进度", "📊 社群數據", "🎛️ 總控台"])
 
 
@@ -146,7 +204,19 @@ with tab1:
 
     ig_badge = f'<a href="{char["ig_url"]}" target="_blank" style="font-size:12px;color:#555;text-decoration:none;">{char["ig"]} ↗</a>' if char["ig"] else '<span style="font-size:12px;color:#444;">IG 待建立</span>'
     rank_label = "S 级" if char["rank"] == "S" else "A 级"
-    in_stock_badge = '<span style="background:#4CAF5022;border:1px solid #4CAF50;color:#4CAF50;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">✅ 已入庫</span>' if char.get("in_stock") else ''
+    _sheet_status = get_char_stock_status(char["name"], fallback_in_stock=char.get("in_stock", False))
+    _BADGE_STYLES = {
+        "已入庫":  ("#4CAF50", "✅ 已入庫"),
+        "待審":    ("#FFB300", "⏳ 待海哥審"),
+        "駁回":    ("#F44336", "🔴 駁回"),
+        "需調整":  ("#FF9800", "⚠️ 需調整"),
+        "捏人中":  ("#7C6BDB", "🧊 捏人中"),
+    }
+    if _sheet_status and _sheet_status in _BADGE_STYLES:
+        _c, _lbl = _BADGE_STYLES[_sheet_status]
+        in_stock_badge = f'<span style="background:{_c}22;border:1px solid {_c};color:{_c};border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{_lbl}</span>'
+    else:
+        in_stock_badge = ''
     tags_html = "".join(f'<span class="tag {cls}">{t}</span>' for t, cls in CHAR_TAGS.get(char["name"], []))
 
     st.markdown(f"""
