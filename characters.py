@@ -274,10 +274,14 @@ CHARACTERS = [
             "ig": "https://www.instagram.com/good_ran__/",
         },
         "images": [
-            "assets/characters/guran_front.jpg",
-            "assets/characters/guran_side.jpg",
-            "assets/characters/guran_back.jpg",
-            "assets/characters/guran_pose.jpg",
+            "assets/characters/8K_超写实手机实拍，春日户外绿植旁跟拍，19_岁亚洲少女（顾染）；面部特征：顾染标志性瓜子脸，五官精致立体，眼眸清澈灵动，表情温柔恬静，自带清冷纯欲气场，贴合模特人设.png",
+            "assets/characters/8K超写实原生街拍质感，深夜天台停车场随拍，19岁亞洲少女，身高165公分，D罩杯；_【发型造型】_发色：纯深黑色长直发，发丝顺滑如丝，自然垂落在肩背，齐刘海_空气刘海修饰脸.png",
+            "assets/characters/8K超写实手机实拍，室内居家氛围跟拍，19岁亚洲少女（顾染）；_面部特征：顾染标志性瓜子脸，五官精致立体，眼神慵懒魅惑，表情带一丝玩味感，自带冷艳气场，贴合模特人设；_.png",
+            "assets/characters/lazycut-manual-result.png",
+            "assets/characters/{__Prompt____20岁中国顶级Coser顾染完美还原Overlord雅儿贝德，温情诱惑姿态，病娇美感，vintage_202604091729 (1).png",
+            "assets/characters/{__Prompt____20岁中国顶级Coser顾染完美还原《咒术回战》禅院真希，短发造型，战斗感拉满，vintage_202604091729 (1).png",
+            "assets/characters/保留抓頭髮的手_拿包包的手_換到另一手拿著_202604091809.png",
+            "assets/characters/身上沒有刺青拿掉_2K_202604071833.png",
         ],
         "basic": [
             ("角色名称", "顾染"),
