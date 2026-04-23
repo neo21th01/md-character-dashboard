@@ -94,6 +94,7 @@ CHARACTERS = [
         "en_name": "Hu Qianlu",
         "rank": "S",
         "rank_color": "#FFB300",
+        "in_stock": True,
         "ig": "@hu_maturemommy",
         "ig_url": "https://www.instagram.com/hu_maturemommy/",
         "platforms": {
@@ -177,6 +178,7 @@ CHARACTERS = [
         "en_name": "Céline Wang",
         "rank": "A",
         "rank_color": "#7C6BDB",
+        "in_stock": True,
         "ig": "@celine.w_iso",
         "ig_url": "https://www.instagram.com/celine.w_iso/",
         "platforms": {
