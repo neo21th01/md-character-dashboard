@@ -6,6 +6,7 @@ CHARACTERS = [
         "en_name": "Lin Qianqian",
         "rank": "S",
         "rank_color": "#FFB300",
+        "in_stock": True,
         "ig": "@lqq.u_u",
         "ig_url": "https://www.instagram.com/lqq.u_u/",
         "platforms": {
