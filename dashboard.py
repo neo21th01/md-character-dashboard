@@ -102,10 +102,13 @@ st.markdown(f"""
 # ════════════════════════════════════════════════════════
 # 總控台狀態同步（讓 Tab 1 顯示海哥審核結果）
 # ════════════════════════════════════════════════════════
-@st.cache_data(ttl=120)
+@st.cache_data(ttl=600, show_spinner=False)
 def _load_stock_status_from_sheet():
-    """從總控台讀取每位角色的狀態。失敗回傳 {}。"""
+    """從總控台讀取每位角色的狀態。失敗回傳 {}。10 分鐘快取，加 8 秒 socket timeout 避免卡住 UI。"""
+    import socket
+    _prev_timeout = socket.getdefaulttimeout()
     try:
+        socket.setdefaulttimeout(8)
         scopes = [
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive",
@@ -115,14 +118,13 @@ def _load_stock_status_from_sheet():
         client = gspread.authorize(creds)
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
         ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")
-        all_vals = ws.get_all_values()
-        COL_NAME, COL_STATUS = 1, 11
+        # 只讀名稱 + 狀態兩欄，不整表拉
+        names = ws.col_values(2)  # B 欄 = COL_NAME + 1
+        statuses = ws.col_values(12)  # L 欄 = COL_STATUS + 1
         status_map = {}
-        for row in all_vals[2:]:
-            if len(row) <= COL_STATUS:
-                continue
-            name = row[COL_NAME].strip()
-            status = str(row[COL_STATUS]).strip()
+        for i in range(2, min(len(names), len(statuses))):
+            name = (names[i] or "").strip()
+            status = (statuses[i] or "").strip()
             if not name:
                 continue
             if status_map.get(name) == "已入庫":
@@ -140,6 +142,8 @@ def _load_stock_status_from_sheet():
         return status_map
     except Exception:
         return {}
+    finally:
+        socket.setdefaulttimeout(_prev_timeout)
 
 
 _NAME_ALIASES = {
@@ -231,62 +235,65 @@ with tab1:
     <div style="margin-bottom:18px;">{tags_html}</div>
     """, unsafe_allow_html=True)
 
-    col_imgs, col_info = st.columns([2, 3])
+    # 用 empty() 包住角色內容區，切換角色時強制清空再渲染，避免 DOM 複用造成舊圖殘留
+    _char_placeholder = st.empty()
+    with _char_placeholder.container():
+        col_imgs, col_info = st.columns([2, 3])
 
-    with col_imgs:
-        if char["images"]:
-            imgs = char["images"]
-            num_cols = min(len(imgs), 2)
-            img_cols = st.columns(num_cols)
-            for i, img_path in enumerate(imgs):
-                full_path = os.path.join(os.path.dirname(__file__), img_path)
-                if os.path.exists(full_path):
-                    img_cols[i % num_cols].image(full_path, use_container_width=True)
-        else:
-            st.markdown("""
-            <div style="background:#1e1e1e;border:1px dashed #333;border-radius:10px;
-                        height:220px;display:flex;align-items:center;justify-content:center;">
-              <span style="color:#444;font-size:13px;">底图待补充</span>
-            </div>
-            """, unsafe_allow_html=True)
+        with col_imgs:
+            if char["images"]:
+                imgs = char["images"]
+                num_cols = min(len(imgs), 2)
+                img_cols = st.columns(num_cols)
+                for i, img_path in enumerate(imgs):
+                    full_path = os.path.join(os.path.dirname(__file__), img_path)
+                    if os.path.exists(full_path):
+                        img_cols[i % num_cols].image(full_path, use_container_width=True)
+            else:
+                st.markdown("""
+                <div style="background:#1e1e1e;border:1px dashed #333;border-radius:10px;
+                            height:220px;display:flex;align-items:center;justify-content:center;">
+                  <span style="color:#444;font-size:13px;">底图待补充</span>
+                </div>
+                """, unsafe_allow_html=True)
 
-        # 通用：三视图 + 动漫形象（任何角色在 characters.py 定义了就显示）
-        tri_view_paths = char.get("tri_view_images", [])
-        sv_exists = [p for p in tri_view_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
-        if sv_exists:
-            st.markdown('<div style="font-size:12px;color:#E879A0;font-weight:600;margin:14px 0 6px 0;">▌ 三视图</div>', unsafe_allow_html=True)
-            sv_cols = st.columns(len(sv_exists))
-            for i, p in enumerate(sv_exists):
-                full_p = os.path.join(os.path.dirname(__file__), p)
-                sv_cols[i].image(full_p, use_container_width=True)
+            # 通用：三视图 + 动漫形象（任何角色在 characters.py 定义了就显示）
+            tri_view_paths = char.get("tri_view_images", [])
+            sv_exists = [p for p in tri_view_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
+            if sv_exists:
+                st.markdown('<div style="font-size:12px;color:#E879A0;font-weight:600;margin:14px 0 6px 0;">▌ 三视图</div>', unsafe_allow_html=True)
+                sv_cols = st.columns(len(sv_exists))
+                for i, p in enumerate(sv_exists):
+                    full_p = os.path.join(os.path.dirname(__file__), p)
+                    sv_cols[i].image(full_p, use_container_width=True)
 
-        anime_paths = char.get("anime_images", [])
-        anime_exists = [p for p in anime_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
-        if anime_exists:
-            st.markdown('<div style="font-size:12px;color:#7C6BDB;font-weight:600;margin:14px 0 6px 0;">▌ 动漫形象</div>', unsafe_allow_html=True)
-            an_cols = st.columns(len(anime_exists))
-            for i, p in enumerate(anime_exists):
-                full_p = os.path.join(os.path.dirname(__file__), p)
-                an_cols[i].image(full_p, use_container_width=True)
+            anime_paths = char.get("anime_images", [])
+            anime_exists = [p for p in anime_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
+            if anime_exists:
+                st.markdown('<div style="font-size:12px;color:#7C6BDB;font-weight:600;margin:14px 0 6px 0;">▌ 动漫形象</div>', unsafe_allow_html=True)
+                an_cols = st.columns(len(anime_exists))
+                for i, p in enumerate(anime_exists):
+                    full_p = os.path.join(os.path.dirname(__file__), p)
+                    an_cols[i].image(full_p, use_container_width=True)
 
-        st.markdown(f"""
-        <div class="card" style="margin-top:12px;">
-          <div class="card-title">AI 生图 Prompt</div>
-          <div style="font-size:12px;color:#aaa;margin-bottom:8px;line-height:1.6;"><b style="color:#666;">中文：</b>{char['prompt_cn']}</div>
-          <div style="font-size:12px;color:#aaa;line-height:1.6;"><b style="color:#666;">EN：</b>{char['prompt_en']}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col_info:
-        for key, label in SECTION_LABELS:
-            if key not in char: continue
-            table_html = section_table(char[key])
             st.markdown(f"""
-            <div style="margin-bottom:10px;">
-              <div style="font-size:12px;color:#E879A0;font-weight:600;margin-bottom:4px;letter-spacing:0.05em;">{label}</div>
-              <div class="card" style="padding:4px 0;">{table_html}</div>
+            <div class="card" style="margin-top:12px;">
+              <div class="card-title">AI 生图 Prompt</div>
+              <div style="font-size:12px;color:#aaa;margin-bottom:8px;line-height:1.6;"><b style="color:#666;">中文：</b>{char['prompt_cn']}</div>
+              <div style="font-size:12px;color:#aaa;line-height:1.6;"><b style="color:#666;">EN：</b>{char['prompt_en']}</div>
             </div>
             """, unsafe_allow_html=True)
+
+        with col_info:
+            for key, label in SECTION_LABELS:
+                if key not in char: continue
+                table_html = section_table(char[key])
+                st.markdown(f"""
+                <div style="margin-bottom:10px;">
+                  <div style="font-size:12px;color:#E879A0;font-weight:600;margin-bottom:4px;letter-spacing:0.05em;">{label}</div>
+                  <div class="card" style="padding:4px 0;">{table_html}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
     st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 IP 资产系统</div>", unsafe_allow_html=True)
 
