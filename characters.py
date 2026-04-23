@@ -25,6 +25,10 @@ CHARACTERS = [
             "assets/characters/淺淺範例圖2.jpeg",
             "assets/characters/淺淺範例圖3.jpeg",
         ],
+        "anime_images": [
+            "assets/characters/linqianqian_anime_1.jpg",
+            "assets/characters/linqianqian_anime_2.jpg",
+        ],
         "basic": [
             ("角色名称", "林淺淺"),
             ("性别", "女"),
@@ -102,12 +106,7 @@ CHARACTERS = [
             "tiktok": "https://www.tiktok.com/@hu_maturemommy",
         },
         "images": [
-            "assets/characters/Gemini_Generated_Image_vawxojvawxojvawx.jpg",
-            "assets/characters/huqianlu_1.jpg",
-            "assets/characters/huqianlu_2.jpg",
-            "assets/characters/Gemini_Generated_Image_sy0tc4sy0tc4sy0t.jpg",
-            "assets/characters/Gemini_Generated_Image_g8r92jg8r92jg8r9.jpg",
-            "assets/characters/专业人像摄影_温柔pose_1_4K.png",
+            "assets/characters/胡芊璐第二版小版.jpg",
         ],
         "basic": [
             ("角色名称", "胡芊璐"),

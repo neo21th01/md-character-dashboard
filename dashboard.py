@@ -250,25 +250,24 @@ with tab1:
             </div>
             """, unsafe_allow_html=True)
 
-        # 林浅浅专属：三视图 + 动漫图
-        if char["name"] == "林浅浅":
-            sv_paths = [f"assets/characters/linqianqian_sv_{i}.jpg" for i in range(1,3)]
-            sv_exists = [p for p in sv_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
-            if sv_exists:
-                st.markdown('<div style="font-size:12px;color:#E879A0;font-weight:600;margin:14px 0 6px 0;">▌ 三视图</div>', unsafe_allow_html=True)
-                sv_cols = st.columns(len(sv_exists))
-                for i, p in enumerate(sv_exists):
-                    full_p = os.path.join(os.path.dirname(__file__), p)
-                    sv_cols[i].image(full_p, use_container_width=True)
+        # 通用：三视图 + 动漫形象（任何角色在 characters.py 定义了就显示）
+        tri_view_paths = char.get("tri_view_images", [])
+        sv_exists = [p for p in tri_view_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
+        if sv_exists:
+            st.markdown('<div style="font-size:12px;color:#E879A0;font-weight:600;margin:14px 0 6px 0;">▌ 三视图</div>', unsafe_allow_html=True)
+            sv_cols = st.columns(len(sv_exists))
+            for i, p in enumerate(sv_exists):
+                full_p = os.path.join(os.path.dirname(__file__), p)
+                sv_cols[i].image(full_p, use_container_width=True)
 
-            anime_paths = [f"assets/characters/linqianqian_anime_{i}.jpg" for i in range(1,3)]
-            anime_exists = [p for p in anime_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
-            if anime_exists:
-                st.markdown('<div style="font-size:12px;color:#7C6BDB;font-weight:600;margin:14px 0 6px 0;">▌ 动漫形象</div>', unsafe_allow_html=True)
-                an_cols = st.columns(len(anime_exists))
-                for i, p in enumerate(anime_exists):
-                    full_p = os.path.join(os.path.dirname(__file__), p)
-                    an_cols[i].image(full_p, use_container_width=True)
+        anime_paths = char.get("anime_images", [])
+        anime_exists = [p for p in anime_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
+        if anime_exists:
+            st.markdown('<div style="font-size:12px;color:#7C6BDB;font-weight:600;margin:14px 0 6px 0;">▌ 动漫形象</div>', unsafe_allow_html=True)
+            an_cols = st.columns(len(anime_exists))
+            for i, p in enumerate(anime_exists):
+                full_p = os.path.join(os.path.dirname(__file__), p)
+                an_cols[i].image(full_p, use_container_width=True)
 
         st.markdown(f"""
         <div class="card" style="margin-top:12px;">
