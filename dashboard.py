@@ -196,19 +196,6 @@ with tab1:
         "胡芊璐":     [("成熟人妻","tag-cyan"),("中式复古","tag-cyan"),("温柔风骚","tag-pink"),("偏M","tag-gray"),("台湾复古","tag-gray")],
     }
 
-    char_names = [c["name"] for c in ALL_CHARS]
-    selected = st.radio(
-        "选择角色",
-        char_names,
-        horizontal=True,
-        label_visibility="collapsed",
-    )
-
-    char = next(c for c in ALL_CHARS if c["name"] == selected)
-
-    ig_badge = f'<a href="{char["ig_url"]}" target="_blank" style="font-size:12px;color:#555;text-decoration:none;">{char["ig"]} ↗</a>' if char["ig"] else '<span style="font-size:12px;color:#444;">IG 待建立</span>'
-    rank_label = "S 级" if char["rank"] == "S" else "A 级"
-    _sheet_status = get_char_stock_status(char["name"], fallback_in_stock=char.get("in_stock", False))
     _BADGE_STYLES = {
         "已入庫":  ("#4CAF50", "✅ 已入庫"),
         "待審":    ("#FFB300", "⏳ 待海哥審"),
@@ -216,84 +203,215 @@ with tab1:
         "需調整":  ("#FF9800", "⚠️ 需調整"),
         "捏人中":  ("#7C6BDB", "🧊 捏人中"),
     }
-    if _sheet_status and _sheet_status in _BADGE_STYLES:
-        _c, _lbl = _BADGE_STYLES[_sheet_status]
-        in_stock_badge = f'<span style="background:{_c}22;border:1px solid {_c};color:{_c};border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{_lbl}</span>'
+
+    # ── 合併 sheet 角色名 + characters.py 詳細資料 ──────────────
+    sheet_status_map = _load_stock_status_from_sheet()  # {name: status}
+    detailed_by_name = {c["name"]: c for c in ALL_CHARS}
+    # 加入簡繁體別名對應
+    for c in ALL_CHARS:
+        for alias in _NAME_ALIASES.get(c["name"], []):
+            detailed_by_name[alias] = c
+
+    # 蒐集所有要顯示的角色（sheet 有 + characters.py 有 的聯集）
+    all_names_set = set(sheet_status_map.keys()) | {c["name"] for c in ALL_CHARS}
+    merged_chars = []
+    for name in all_names_set:
+        detail = detailed_by_name.get(name)
+        # 簡繁體 fallback：若 sheet 名字找不到 detail，找對應
+        if not detail:
+            for alias in _NAME_ALIASES.get(name, []):
+                if alias in detailed_by_name:
+                    detail = detailed_by_name[alias]
+                    break
+        status = get_char_stock_status(name, fallback_in_stock=(detail or {}).get("in_stock", False))
+        gender = (detail or {}).get("gender", "女")  # 預設女（過渡期）
+        merged_chars.append({
+            "display_name": name,
+            "detail": detail,
+            "status": status,
+            "gender": gender,
+        })
+
+    # 去重：如果 sheet 和 characters.py 都有，只保留一個（用 detail 的名字）
+    seen_detail_ids = set()
+    unique_chars = []
+    for mc in merged_chars:
+        if mc["detail"]:
+            did = id(mc["detail"])
+            if did in seen_detail_ids:
+                continue
+            seen_detail_ids.add(did)
+            mc["display_name"] = mc["detail"]["name"]
+        unique_chars.append(mc)
+
+    # 排序：有 detail 的在前，然後按名字
+    unique_chars.sort(key=lambda x: (0 if x["detail"] else 1, x["display_name"]))
+
+    # ── 第一層：性別 filter ──────────────
+    gender_filter = st.radio(
+        "性別",
+        ["🌐 全部", "👩 女角色", "👨 男角色"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="tab1_gender_filter",
+    )
+    if gender_filter == "👩 女角色":
+        filtered = [c for c in unique_chars if c["gender"] == "女"]
+    elif gender_filter == "👨 男角色":
+        filtered = [c for c in unique_chars if c["gender"] == "男"]
     else:
-        in_stock_badge = ''
-    tags_html = "".join(f'<span class="tag {cls}">{t}</span>' for t, cls in CHAR_TAGS.get(char["name"], []))
+        filtered = unique_chars
 
-    st.markdown(f"""
-    <div style="display:flex;align-items:center;gap:12px;margin:20px 0 14px 0;">
-      <span style="font-size:24px;font-weight:700;color:#fff;">{char['name']}</span>
-      <span style="font-size:14px;color:#888;">{char['en_name']}</span>
-      <span style="background:{char['rank_color']}22;border:1px solid {char['rank_color']};color:{char['rank_color']};
-            border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{rank_label}</span>
-      {in_stock_badge}
-      {ig_badge}
-    </div>
-    <div style="margin-bottom:18px;">{tags_html}</div>
-    """, unsafe_allow_html=True)
+    # ── 第二層：按狀態分桶 ──────────────
+    bucket_in_stock = [c for c in filtered if c["status"] == "已入庫"]
+    bucket_in_review = [c for c in filtered if c["status"] in ("待審", "需調整", "駁回")]
+    bucket_in_dev = [c for c in filtered if c["status"] == "捏人中" or c["status"] is None]
 
-    # 用 empty() 包住角色內容區，切換角色時強制清空再渲染，避免 DOM 複用造成舊圖殘留
-    _char_placeholder = st.empty()
-    with _char_placeholder.container():
-        col_imgs, col_info = st.columns([2, 3])
+    # ── 角色詳情渲染函式 ──────────────
+    def render_character_detail(char):
+        """完整渲染一個有 detail 資料的角色。"""
+        ig_badge = (
+            f'<a href="{char["ig_url"]}" target="_blank" style="font-size:12px;color:#555;text-decoration:none;">{char["ig"]} ↗</a>'
+            if char.get("ig") else '<span style="font-size:12px;color:#444;">IG 待建立</span>'
+        )
+        rank_label = "S 级" if char["rank"] == "S" else "A 级"
+        _sheet_status = get_char_stock_status(char["name"], fallback_in_stock=char.get("in_stock", False))
+        if _sheet_status and _sheet_status in _BADGE_STYLES:
+            _c, _lbl = _BADGE_STYLES[_sheet_status]
+            in_stock_badge = f'<span style="background:{_c}22;border:1px solid {_c};color:{_c};border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{_lbl}</span>'
+        else:
+            in_stock_badge = ''
+        tags_html = "".join(f'<span class="tag {cls}">{t}</span>' for t, cls in CHAR_TAGS.get(char["name"], []))
 
-        with col_imgs:
-            if char["images"]:
-                imgs = char["images"]
-                num_cols = min(len(imgs), 2)
-                img_cols = st.columns(num_cols)
-                for i, img_path in enumerate(imgs):
-                    full_path = os.path.join(os.path.dirname(__file__), img_path)
-                    if os.path.exists(full_path):
-                        img_cols[i % num_cols].image(full_path, use_container_width=True)
-            else:
-                st.markdown("""
-                <div style="background:#1e1e1e;border:1px dashed #333;border-radius:10px;
-                            height:220px;display:flex;align-items:center;justify-content:center;">
-                  <span style="color:#444;font-size:13px;">底图待补充</span>
-                </div>
-                """, unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="display:flex;align-items:center;gap:12px;margin:20px 0 14px 0;">
+          <span style="font-size:24px;font-weight:700;color:#fff;">{char['name']}</span>
+          <span style="font-size:14px;color:#888;">{char['en_name']}</span>
+          <span style="background:{char['rank_color']}22;border:1px solid {char['rank_color']};color:{char['rank_color']};
+                border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{rank_label}</span>
+          {in_stock_badge}
+          {ig_badge}
+        </div>
+        <div style="margin-bottom:18px;">{tags_html}</div>
+        """, unsafe_allow_html=True)
 
-            # 通用：三视图 + 动漫形象（任何角色在 characters.py 定义了就显示）
-            tri_view_paths = char.get("tri_view_images", [])
-            sv_exists = [p for p in tri_view_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
-            if sv_exists:
-                st.markdown('<div style="font-size:12px;color:#E879A0;font-weight:600;margin:14px 0 6px 0;">▌ 三视图</div>', unsafe_allow_html=True)
-                sv_cols = st.columns(len(sv_exists))
-                for i, p in enumerate(sv_exists):
-                    full_p = os.path.join(os.path.dirname(__file__), p)
-                    sv_cols[i].image(full_p, use_container_width=True)
+        _char_placeholder = st.empty()
+        with _char_placeholder.container():
+            col_imgs, col_info = st.columns([2, 3])
 
-            anime_paths = char.get("anime_images", [])
-            anime_exists = [p for p in anime_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
-            if anime_exists:
-                st.markdown('<div style="font-size:12px;color:#7C6BDB;font-weight:600;margin:14px 0 6px 0;">▌ 动漫形象</div>', unsafe_allow_html=True)
-                an_cols = st.columns(len(anime_exists))
-                for i, p in enumerate(anime_exists):
-                    full_p = os.path.join(os.path.dirname(__file__), p)
-                    an_cols[i].image(full_p, use_container_width=True)
+            with col_imgs:
+                if char.get("images"):
+                    imgs = char["images"]
+                    num_cols = min(len(imgs), 2)
+                    img_cols = st.columns(num_cols)
+                    for i, img_path in enumerate(imgs):
+                        full_path = os.path.join(os.path.dirname(__file__), img_path)
+                        if os.path.exists(full_path):
+                            img_cols[i % num_cols].image(full_path, use_container_width=True)
+                else:
+                    st.markdown("""
+                    <div style="background:#1e1e1e;border:1px dashed #333;border-radius:10px;
+                                height:220px;display:flex;align-items:center;justify-content:center;">
+                      <span style="color:#444;font-size:13px;">底图待补充</span>
+                    </div>
+                    """, unsafe_allow_html=True)
 
-            st.markdown(f"""
-            <div class="card" style="margin-top:12px;">
-              <div class="card-title">AI 生图 Prompt</div>
-              <div style="font-size:12px;color:#aaa;margin-bottom:8px;line-height:1.6;"><b style="color:#666;">中文：</b>{char['prompt_cn']}</div>
-              <div style="font-size:12px;color:#aaa;line-height:1.6;"><b style="color:#666;">EN：</b>{char['prompt_en']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+                tri_view_paths = char.get("tri_view_images", [])
+                sv_exists = [p for p in tri_view_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
+                if sv_exists:
+                    st.markdown('<div style="font-size:12px;color:#E879A0;font-weight:600;margin:14px 0 6px 0;">▌ 三视图</div>', unsafe_allow_html=True)
+                    sv_cols = st.columns(len(sv_exists))
+                    for i, p in enumerate(sv_exists):
+                        full_p = os.path.join(os.path.dirname(__file__), p)
+                        sv_cols[i].image(full_p, use_container_width=True)
 
-        with col_info:
-            for key, label in SECTION_LABELS:
-                if key not in char: continue
-                table_html = section_table(char[key])
+                anime_paths = char.get("anime_images", [])
+                anime_exists = [p for p in anime_paths if os.path.exists(os.path.join(os.path.dirname(__file__), p))]
+                if anime_exists:
+                    st.markdown('<div style="font-size:12px;color:#7C6BDB;font-weight:600;margin:14px 0 6px 0;">▌ 动漫形象</div>', unsafe_allow_html=True)
+                    an_cols = st.columns(len(anime_exists))
+                    for i, p in enumerate(anime_exists):
+                        full_p = os.path.join(os.path.dirname(__file__), p)
+                        an_cols[i].image(full_p, use_container_width=True)
+
                 st.markdown(f"""
-                <div style="margin-bottom:10px;">
-                  <div style="font-size:12px;color:#E879A0;font-weight:600;margin-bottom:4px;letter-spacing:0.05em;">{label}</div>
-                  <div class="card" style="padding:4px 0;">{table_html}</div>
+                <div class="card" style="margin-top:12px;">
+                  <div class="card-title">AI 生图 Prompt</div>
+                  <div style="font-size:12px;color:#aaa;margin-bottom:8px;line-height:1.6;"><b style="color:#666;">中文：</b>{char.get('prompt_cn','')}</div>
+                  <div style="font-size:12px;color:#aaa;line-height:1.6;"><b style="color:#666;">EN：</b>{char.get('prompt_en','')}</div>
                 </div>
                 """, unsafe_allow_html=True)
+
+            with col_info:
+                for key, label in SECTION_LABELS:
+                    if key not in char: continue
+                    table_html = section_table(char[key])
+                    st.markdown(f"""
+                    <div style="margin-bottom:10px;">
+                      <div style="font-size:12px;color:#E879A0;font-weight:600;margin-bottom:4px;letter-spacing:0.05em;">{label}</div>
+                      <div class="card" style="padding:4px 0;">{table_html}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+    def render_placeholder(name, status):
+        """只在 sheet 有、characters.py 還沒建檔的角色 —— 顯示佔位卡片。"""
+        badge_html = ""
+        if status and status in _BADGE_STYLES:
+            _c, _lbl = _BADGE_STYLES[status]
+            badge_html = f'<span style="background:{_c}22;border:1px solid {_c};color:{_c};border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{_lbl}</span>'
+        st.markdown(f"""
+        <div style="display:flex;align-items:center;gap:12px;margin:20px 0 14px 0;">
+          <span style="font-size:24px;font-weight:700;color:#fff;">{name}</span>
+          <span style="background:#7C6BDB22;border:1px solid #7C6BDB;color:#7C6BDB;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">📝 待建檔</span>
+          {badge_html}
+        </div>
+        <div style="background:#1e1e1e;border:1px dashed #333;border-radius:10px;padding:40px 20px;text-align:center;margin-top:12px;">
+          <div style="color:#999;font-size:14px;margin-bottom:8px;">「{name}」已登記於總控台，但尚未在 characters.py 建立完整檔案</div>
+          <div style="color:#555;font-size:12px;">請通知開發者補建：面部錨點、外貌、氣質、內容屬性、世界觀、聲音、商業資料、AI prompt、照片等</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    def render_bucket(chars_in_bucket, bucket_key):
+        """渲染某一個桶子的 radio + 選中角色詳情。"""
+        if not chars_in_bucket:
+            st.markdown(
+                '<div style="color:#555;font-size:13px;padding:24px 8px;">此區塊目前沒有角色</div>',
+                unsafe_allow_html=True,
+            )
+            return
+        names = [c["display_name"] for c in chars_in_bucket]
+        if len(names) <= 10:
+            sel = st.radio(
+                "選擇角色",
+                names,
+                horizontal=True,
+                label_visibility="collapsed",
+                key=f"tab1_sel_{bucket_key}",
+            )
+        else:
+            sel = st.selectbox(
+                "選擇角色",
+                names,
+                label_visibility="collapsed",
+                key=f"tab1_sel_{bucket_key}",
+            )
+        mc = next(c for c in chars_in_bucket if c["display_name"] == sel)
+        if mc["detail"]:
+            render_character_detail(mc["detail"])
+        else:
+            render_placeholder(mc["display_name"], mc["status"])
+
+    # ── 狀態子分頁 ──────────────
+    sub_tabs = st.tabs([
+        f"🟢 已入庫 ({len(bucket_in_stock)})",
+        f"⏳ 待審核 ({len(bucket_in_review)})",
+        f"🧊 開發中 ({len(bucket_in_dev)})",
+        f"📚 全部 ({len(filtered)})",
+    ])
+    with sub_tabs[0]: render_bucket(bucket_in_stock, "in_stock")
+    with sub_tabs[1]: render_bucket(bucket_in_review, "in_review")
+    with sub_tabs[2]: render_bucket(bucket_in_dev, "in_dev")
+    with sub_tabs[3]: render_bucket(filtered, "all")
 
     st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 IP 资产系统</div>", unsafe_allow_html=True)
 
