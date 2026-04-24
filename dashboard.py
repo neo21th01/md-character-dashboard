@@ -301,23 +301,19 @@ with tab1:
         return (1, x["display_name"])
     unique_chars.sort(key=_sort_key)
 
-    # ── 第一層：性別 filter（pill-style radio，依選中項動態換色）──
+    # ── 第一層：性別 filter（只有 女 / 男 兩個 pill；預設女）──
     gender_filter = st.radio(
         "性別",
-        ["🌐 全部", "👩 女角色", "👨 男角色"],
+        ["👩 女角色", "👨 男角色"],
         horizontal=True,
         label_visibility="collapsed",
         key="tab1_gender_filter",
     )
-    # 動態覆寫 gender 選中狀態的色：女=粉紅 glow、男=藍 glow、全部=紫 glow
-    # （用 nth-of-type 鎖定第一個 stRadio 的 label；其他 radio 不受影響）
-    if gender_filter == "👩 女角色":
-        _g_color, _g_glow = "#E879A0", "#E879A088"
-    elif gender_filter == "👨 男角色":
+    # 選中色：女=粉紅 glow、男=藍 glow
+    if gender_filter == "👨 男角色":
         _g_color, _g_glow = "#4A9EE0", "#4A9EE088"
     else:
-        # 全部：白色 glow
-        _g_color, _g_glow = "#FFFFFF", "#FFFFFF66"
+        _g_color, _g_glow = "#E879A0", "#E879A088"
     # 放寬選擇器：applies to all st.radio selected state（character radio 也會跟隨目前性別色，視覺一致）
     st.markdown(f"""
     <style>
@@ -331,12 +327,10 @@ with tab1:
     </style>
     """, unsafe_allow_html=True)
 
-    if gender_filter == "👩 女角色":
-        filtered = [c for c in unique_chars if c["gender"] == "女"]
-    elif gender_filter == "👨 男角色":
+    if gender_filter == "👨 男角色":
         filtered = [c for c in unique_chars if c["gender"] == "男"]
     else:
-        filtered = unique_chars
+        filtered = [c for c in unique_chars if c["gender"] == "女"]
 
     # ── 第二層：按狀態分桶 ──────────────
     bucket_in_stock = [c for c in filtered if c["status"] == "已入庫"]
