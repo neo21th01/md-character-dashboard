@@ -209,7 +209,8 @@ def get_char_stock_status(char_name, fallback_in_stock=False):
     return "已入庫" if fallback_in_stock else None
 
 
-tab1, tab2, tab3, tab4 = st.tabs(["🎭 角色 IP 档案", "📋 专案进度", "📊 社群數據", "🎛️ 總控台"])
+tab1, tab3, tab4 = st.tabs(["🎭 角色 IP 档案", "📊 社群數據", "🎛️ 總控台"])
+tab2 = None  # 专案进度 暂时隐藏（2026-04-24），未來恢復：還原 tabs 清單 + 取消下方 `if False:` 即可
 
 
 # ════════════════════════════════════════════════════════
@@ -317,15 +318,15 @@ with tab1:
     else:
         # 全部：白色 glow
         _g_color, _g_glow = "#FFFFFF", "#FFFFFF66"
+    # 放寬選擇器：applies to all st.radio selected state（character radio 也會跟隨目前性別色，視覺一致）
     st.markdown(f"""
     <style>
-    /* 第一個 stRadio（性別）的選中色 — 用 div[data-testid="stVerticalBlock"] > 第一個 element-container 內的 stRadio */
-    section.main .stRadio:first-of-type [role="radiogroup"] > label:has(input[type="radio"]:checked) {{
+    div[data-testid="stRadio"] [role="radiogroup"] > label:has(input[type="radio"]:checked) {{
         background: {_g_color}22 !important;
         border-color: {_g_color} !important;
         color: {_g_color} !important;
-        box-shadow: 0 0 12px {_g_glow};
-        font-weight: 600;
+        box-shadow: 0 0 12px {_g_glow} !important;
+        font-weight: 600 !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -492,9 +493,10 @@ with tab1:
 
 
 # ════════════════════════════════════════════════════════
-# TAB 2：专案进度
+# TAB 2：专案进度（暂时隐藏 2026-04-24，未來恢复：把 if False 改 if True）
 # ════════════════════════════════════════════════════════
-with tab2:
+if False and tab2 is not None:
+ with tab2:
 
     st.markdown("<div style='margin-bottom:20px;'></div>", unsafe_allow_html=True)
 
