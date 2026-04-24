@@ -292,8 +292,13 @@ with tab1:
             mc["display_name"] = mc["detail"]["name"]
         unique_chars.append(mc)
 
-    # 排序：有 detail 的在前，然後按名字
-    unique_chars.sort(key=lambda x: (0 if x["detail"] else 1, x["display_name"]))
+    # 排序：依 characters.py 原本順序（有 detail 的），然後 sheet-only 的照名字
+    _detail_order = {c["name"]: i for i, c in enumerate(ALL_CHARS)}
+    def _sort_key(x):
+        if x["detail"]:
+            return (0, _detail_order.get(x["detail"]["name"], 9999))
+        return (1, x["display_name"])
+    unique_chars.sort(key=_sort_key)
 
     # ── 第一層：性別 filter（pill-style radio，依選中項動態換色）──
     gender_filter = st.radio(

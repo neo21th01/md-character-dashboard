@@ -343,8 +343,7 @@ CHARACTERS = [
             "ig": "https://www.instagram.com/nini_power99/",
         },
         "images": [
-            "assets/characters/nini_1.jpg",
-            "assets/characters/nini_2.jpg",
+            "assets/characters/倪妮第二版小档.jpg",
         ],
         "basic": [
             ("角色名称", "倪妮"),
