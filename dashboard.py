@@ -26,14 +26,62 @@ st.markdown("""
 [data-testid="stHeader"] { background: #1a1a1a; }
 section[data-testid="stSidebar"] { background: #141414; }
 
+/* 主頁籤（🎭 角色 IP 档案 / 📋 专案进度 / 📊 社群數據 / 🎛️ 總控台） */
 [data-testid="stTabs"] button {
-    font-size: 15px !important;
+    font-size: 14px !important;
     color: #888 !important;
-    padding: 10px 20px !important;
+    padding: 8px 18px !important;
 }
 [data-testid="stTabs"] button[aria-selected="true"] {
     color: #fff !important;
     border-bottom: 2px solid #E879A0 !important;
+}
+/* 子分頁（🟢 已入庫 / ⏳ 待審核 / 🧊 開發中 / 📚 全部）— 更小、更低調 */
+[data-testid="stTabs"] [data-testid="stTabs"] button {
+    font-size: 12px !important;
+    color: #666 !important;
+    padding: 4px 10px !important;
+    min-height: 28px !important;
+}
+[data-testid="stTabs"] [data-testid="stTabs"] button[aria-selected="true"] {
+    color: #E879A0 !important;
+    border-bottom: 1px solid #E879A0 !important;
+    background: transparent !important;
+}
+[data-testid="stTabs"] [data-testid="stTabs"] [data-baseweb="tab-list"] {
+    gap: 0 !important;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+/* Radio 改造：性別 filter 用的 pill button 樣式 */
+.stRadio [role="radiogroup"] {
+    gap: 8px !important;
+    flex-wrap: wrap;
+}
+.stRadio [role="radiogroup"] > label {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 999px;
+    padding: 4px 14px !important;
+    margin: 0 !important;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 12px !important;
+}
+.stRadio [role="radiogroup"] > label:hover {
+    border-color: #555;
+    background: #222;
+}
+/* 隱藏 radio 圓點 */
+.stRadio [role="radiogroup"] > label > div:first-child {
+    display: none !important;
+}
+/* 預設選中狀態：粉色 glow（gender 的 色 也會覆寫於下方） */
+.stRadio [role="radiogroup"] > label:has(input[type="radio"]:checked) {
+    background: #E879A015 !important;
+    border-color: #E879A0 !important;
+    color: #E879A0 !important;
+    box-shadow: 0 0 8px #E879A044;
 }
 
 .card {
@@ -91,11 +139,11 @@ h3 { color: #eee !important; font-size: 16px !important; margin-top: 28px !impor
 
 # ── 页首 ─────────────────────────────────────────────────
 st.markdown(f"""
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
   <div>
-    <span style="font-size:24px;font-weight:700;color:#fff;">🎭 智影AI角色库</span>
+    <span style="font-size:20px;font-weight:700;color:#fff;letter-spacing:0.02em;">🎭 智影AI角色库</span>
   </div>
-  <div style="font-size:13px;color:#555;">资料更新：{datetime.now().strftime('%Y/%m/%d %H:%M')}</div>
+  <div style="font-size:11px;color:#555;">资料更新：{datetime.now().strftime('%Y/%m/%d %H:%M')}</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -247,7 +295,7 @@ with tab1:
     # 排序：有 detail 的在前，然後按名字
     unique_chars.sort(key=lambda x: (0 if x["detail"] else 1, x["display_name"]))
 
-    # ── 第一層：性別 filter ──────────────
+    # ── 第一層：性別 filter（pill-style radio，依選中項動態換色）──
     gender_filter = st.radio(
         "性別",
         ["🌐 全部", "👩 女角色", "👨 男角色"],
@@ -255,6 +303,27 @@ with tab1:
         label_visibility="collapsed",
         key="tab1_gender_filter",
     )
+    # 動態覆寫 gender 選中狀態的色：女=粉紅 glow、男=藍 glow、全部=紫 glow
+    # （用 nth-of-type 鎖定第一個 stRadio 的 label；其他 radio 不受影響）
+    if gender_filter == "👩 女角色":
+        _g_color, _g_glow = "#E879A0", "#E879A088"
+    elif gender_filter == "👨 男角色":
+        _g_color, _g_glow = "#4A9EE0", "#4A9EE088"
+    else:
+        _g_color, _g_glow = "#7C6BDB", "#7C6BDB66"
+    st.markdown(f"""
+    <style>
+    /* 第一個 stRadio（性別）的選中色 — 用 div[data-testid="stVerticalBlock"] > 第一個 element-container 內的 stRadio */
+    section.main .stRadio:first-of-type [role="radiogroup"] > label:has(input[type="radio"]:checked) {{
+        background: {_g_color}22 !important;
+        border-color: {_g_color} !important;
+        color: {_g_color} !important;
+        box-shadow: 0 0 12px {_g_glow};
+        font-weight: 600;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
     if gender_filter == "👩 女角色":
         filtered = [c for c in unique_chars if c["gender"] == "女"]
     elif gender_filter == "👨 男角色":
