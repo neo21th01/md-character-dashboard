@@ -19,7 +19,7 @@ CHARACTERS = [
             "patreon":   "https://www.patreon.com/cw/qianqian_haofu",
         },
         "images": [
-            "assets/characters/林浅浅4.png",
+            "assets/characters/林浅浅4.jpg",
         ],
         "basic": [
             ("角色名称", "林淺淺"),
@@ -181,7 +181,7 @@ CHARACTERS = [
             "patreon":  "https://www.patreon.com/cw/CelineLin",
         },
         "images": [
-            "assets/characters/王芷涵版本4.png",
+            "assets/characters/王芷涵版本4.jpg",
         ],
         "basic": [
             ("角色名称", "王芷涵（Céline wang）"),
