@@ -315,7 +315,8 @@ with tab1:
     elif gender_filter == "👨 男角色":
         _g_color, _g_glow = "#4A9EE0", "#4A9EE088"
     else:
-        _g_color, _g_glow = "#7C6BDB", "#7C6BDB66"
+        # 全部：白色 glow
+        _g_color, _g_glow = "#FFFFFF", "#FFFFFF66"
     st.markdown(f"""
     <style>
     /* 第一個 stRadio（性別）的選中色 — 用 div[data-testid="stVerticalBlock"] > 第一個 element-container 內的 stRadio */
