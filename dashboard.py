@@ -209,13 +209,17 @@ _NAME_ALIASES = {
 }
 
 
-def get_char_stock_status(char_name, fallback_in_stock=False):
-    """回传角色的总控台状态字串；找不到时若 fallback_in_stock=True 回『已入库』。"""
+def get_char_stock_status(char_name, fallback_in_stock=False, fallback_review=False):
+    """回传角色的总控台状态字串；找不到时若 fallback_in_stock=True 回『已入库』；fallback_review=True 回『待审』。"""
     status_map = _load_stock_status_from_sheet()
     for c in [char_name] + _NAME_ALIASES.get(char_name, []):
         if c in status_map:
             return status_map[c]
-    return "已入库" if fallback_in_stock else None
+    if fallback_in_stock:
+        return "已入库"
+    if fallback_review:
+        return "待审"
+    return None
 
 
 tab1, tab3, tab4 = st.tabs(["🎭 角色 IP 档案", "📊 社群数据", "🎛️ 总控台"])
@@ -281,7 +285,11 @@ with tab1:
                 if alias in detailed_by_name:
                     detail = detailed_by_name[alias]
                     break
-        status = get_char_stock_status(name, fallback_in_stock=(detail or {}).get("in_stock", False))
+        status = get_char_stock_status(
+            name,
+            fallback_in_stock=(detail or {}).get("in_stock", False),
+            fallback_review=(detail or {}).get("force_review_bucket", False),
+        )
         gender = (detail or {}).get("gender", "女")  # 预设女（过渡期）
         merged_chars.append({
             "display_name": name,
@@ -367,7 +375,11 @@ with tab1:
             if char.get("ig") else '<span style="font-size:12px;color:#444;">IG 待建立</span>'
         )
         rank_label = "S 级" if char["rank"] == "S" else "A 级"
-        _sheet_status = get_char_stock_status(char["name"], fallback_in_stock=char.get("in_stock", False))
+        _sheet_status = get_char_stock_status(
+            char["name"],
+            fallback_in_stock=char.get("in_stock", False),
+            fallback_review=char.get("force_review_bucket", False),
+        )
         if _sheet_status and _sheet_status in _BADGE_STYLES:
             _c, _lbl = _BADGE_STYLES[_sheet_status]
             in_stock_badge = f'<span style="background:{_c}22;border:1px solid {_c};color:{_c};border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">{_lbl}</span>'
