@@ -165,7 +165,7 @@ def _load_stock_status_from_sheet():
         creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
         client = gspread.authorize(creds)
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
-        ws = sheet.worksheet("\U0001f39b\ufe0f 总控台")
+        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")  # 注意：Google Sheets 上頁簽名是繁體「總控台」，不要轉簡
         # 只读名称 + 状态两栏，不整表拉
         names = ws.col_values(2)  # B 栏 = COL_NAME + 1
         statuses = ws.col_values(12)  # L 栏 = COL_STATUS + 1
@@ -177,13 +177,14 @@ def _load_stock_status_from_sheet():
                 continue
             if status_map.get(name) == "已入库":
                 continue
-            if "已入库" in status:
+            # 同时匹配繁体与简体（sheet 端可能仍是繁体）
+            if "已入库" in status or "已入庫" in status:
                 status_map[name] = "已入库"
-            elif "待海哥审" in status:
+            elif "待海哥审" in status or "待海哥審" in status:
                 status_map[name] = "待审"
-            elif "驳回" in status:
+            elif "驳回" in status or "駁回" in status:
                 status_map[name] = "驳回"
-            elif "需调整" in status or "需修改" in status:
+            elif "需调整" in status or "需修改" in status or "需調整" in status:
                 status_map[name] = "需调整"
             elif "捏人中" in status:
                 status_map[name] = "捏人中"
@@ -964,7 +965,7 @@ with tab4:
     try:
         client = get_gsheet_connection()
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
-        ws = sheet.worksheet("\U0001f39b\ufe0f 总控台")
+        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")  # 注意：Google Sheets 上頁簽名是繁體「總控台」，不要轉簡
 
         all_data = ws.get_all_values()
 
