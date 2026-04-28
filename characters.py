@@ -264,7 +264,7 @@ CHARACTERS = [
             "ig": "https://www.instagram.com/good_ran__/",
         },
         "images": [
-            "assets/characters/顾然版本3.jpg",
+            "assets/characters/顾然版本428.jpg",
         ],
         "basic": [
             ("角色名称", "顾染"),
