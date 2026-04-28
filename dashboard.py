@@ -26,7 +26,7 @@ st.markdown("""
 [data-testid="stHeader"] { background: #1a1a1a; }
 section[data-testid="stSidebar"] { background: #141414; }
 
-/* 主頁籤（🎭 角色 IP 档案 / 📋 专案进度 / 📊 社群數據 / 🎛️ 總控台） */
+/* 主页签（🎭 角色 IP 档案 / 📋 专案进度 / 📊 社群数据 / 🎛️ 总控台） */
 [data-testid="stTabs"] button {
     font-size: 14px !important;
     color: #888 !important;
@@ -36,7 +36,7 @@ section[data-testid="stSidebar"] { background: #141414; }
     color: #fff !important;
     border-bottom: 2px solid #E879A0 !important;
 }
-/* 子分頁（🟢 已入庫 / ⏳ 待審核 / 🧊 開發中 / 📚 全部）— 更小、更低調 */
+/* 子分页（🟢 已入库 / ⏳ 待审核 / 🧊 开发中 / 📚 全部）— 更小、更低调 */
 [data-testid="stTabs"] [data-testid="stTabs"] button {
     font-size: 12px !important;
     color: #666 !important;
@@ -53,7 +53,7 @@ section[data-testid="stSidebar"] { background: #141414; }
     border-bottom: 1px solid #2a2a2a;
 }
 
-/* Radio 改造：性別 filter 用的 pill button 樣式 */
+/* Radio 改造：性别 filter 用的 pill button 样式 */
 .stRadio [role="radiogroup"] {
     gap: 8px !important;
     flex-wrap: wrap;
@@ -72,11 +72,11 @@ section[data-testid="stSidebar"] { background: #141414; }
     border-color: #555;
     background: #222;
 }
-/* 隱藏 radio 圓點 */
+/* 隐藏 radio 圆点 */
 .stRadio [role="radiogroup"] > label > div:first-child {
     display: none !important;
 }
-/* 預設選中狀態：粉色 glow（gender 的 色 也會覆寫於下方） */
+/* 预设选中状态：粉色 glow（gender 的 色 也会覆写于下方） */
 .stRadio [role="radiogroup"] > label:has(input[type="radio"]:checked) {
     background: #E879A015 !important;
     border-color: #E879A0 !important;
@@ -148,11 +148,11 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════
-# 總控台狀態同步（讓 Tab 1 顯示海哥審核結果）
+# 总控台状态同步（让 Tab 1 显示海哥审核结果）
 # ════════════════════════════════════════════════════════
 @st.cache_data(ttl=600, show_spinner=False)
 def _load_stock_status_from_sheet():
-    """從總控台讀取每位角色的狀態。失敗回傳 {}。10 分鐘快取，加 8 秒 socket timeout 避免卡住 UI。"""
+    """从总控台读取每位角色的状态。失败回传 {}。10 分钟快取，加 8 秒 socket timeout 避免卡住 UI。"""
     import socket
     _prev_timeout = socket.getdefaulttimeout()
     try:
@@ -165,26 +165,26 @@ def _load_stock_status_from_sheet():
         creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
         client = gspread.authorize(creds)
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
-        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")
-        # 只讀名稱 + 狀態兩欄，不整表拉
-        names = ws.col_values(2)  # B 欄 = COL_NAME + 1
-        statuses = ws.col_values(12)  # L 欄 = COL_STATUS + 1
+        ws = sheet.worksheet("\U0001f39b\ufe0f 总控台")
+        # 只读名称 + 状态两栏，不整表拉
+        names = ws.col_values(2)  # B 栏 = COL_NAME + 1
+        statuses = ws.col_values(12)  # L 栏 = COL_STATUS + 1
         status_map = {}
         for i in range(2, min(len(names), len(statuses))):
             name = (names[i] or "").strip()
             status = (statuses[i] or "").strip()
             if not name:
                 continue
-            if status_map.get(name) == "已入庫":
+            if status_map.get(name) == "已入库":
                 continue
-            if "已入庫" in status:
-                status_map[name] = "已入庫"
-            elif "待海哥審" in status:
-                status_map[name] = "待審"
-            elif "駁回" in status:
-                status_map[name] = "駁回"
-            elif "需調整" in status or "需修改" in status:
-                status_map[name] = "需調整"
+            if "已入库" in status:
+                status_map[name] = "已入库"
+            elif "待海哥审" in status:
+                status_map[name] = "待审"
+            elif "驳回" in status:
+                status_map[name] = "驳回"
+            elif "需调整" in status or "需修改" in status:
+                status_map[name] = "需调整"
             elif "捏人中" in status:
                 status_map[name] = "捏人中"
         return status_map
@@ -201,16 +201,16 @@ _NAME_ALIASES = {
 
 
 def get_char_stock_status(char_name, fallback_in_stock=False):
-    """回傳角色的總控台狀態字串；找不到時若 fallback_in_stock=True 回『已入庫』。"""
+    """回传角色的总控台状态字串；找不到时若 fallback_in_stock=True 回『已入库』。"""
     status_map = _load_stock_status_from_sheet()
     for c in [char_name] + _NAME_ALIASES.get(char_name, []):
         if c in status_map:
             return status_map[c]
-    return "已入庫" if fallback_in_stock else None
+    return "已入库" if fallback_in_stock else None
 
 
-tab1, tab3, tab4 = st.tabs(["🎭 角色 IP 档案", "📊 社群數據", "🎛️ 總控台"])
-tab2 = None  # 专案进度 暂时隐藏（2026-04-24），未來恢復：還原 tabs 清單 + 取消下方 `if False:` 即可
+tab1, tab3, tab4 = st.tabs(["🎭 角色 IP 档案", "📊 社群数据", "🎛️ 总控台"])
+tab2 = None  # 专案进度 暂时隐藏（2026-04-24），未来恢复：还原 tabs 清单 + 取消下方 `if False:` 即可
 
 
 # ════════════════════════════════════════════════════════
@@ -246,34 +246,34 @@ with tab1:
     }
 
     _BADGE_STYLES = {
-        "已入庫":  ("#4CAF50", "✅ 已入庫"),
-        "待審":    ("#FFB300", "⏳ 待海哥審"),
-        "駁回":    ("#F44336", "🔴 駁回"),
-        "需調整":  ("#FF9800", "⚠️ 需調整"),
+        "已入库":  ("#4CAF50", "✅ 已入库"),
+        "待审":    ("#FFB300", "⏳ 待海哥审"),
+        "驳回":    ("#F44336", "🔴 驳回"),
+        "需调整":  ("#FF9800", "⚠️ 需调整"),
         "捏人中":  ("#7C6BDB", "🧊 捏人中"),
     }
 
-    # ── 合併 sheet 角色名 + characters.py 詳細資料 ──────────────
+    # ── 合并 sheet 角色名 + characters.py 详细资料 ──────────────
     sheet_status_map = _load_stock_status_from_sheet()  # {name: status}
     detailed_by_name = {c["name"]: c for c in ALL_CHARS}
-    # 加入簡繁體別名對應
+    # 加入简繁体别名对应
     for c in ALL_CHARS:
         for alias in _NAME_ALIASES.get(c["name"], []):
             detailed_by_name[alias] = c
 
-    # 蒐集所有要顯示的角色（sheet 有 + characters.py 有 的聯集）
+    # 搜集所有要显示的角色（sheet 有 + characters.py 有 的联集）
     all_names_set = set(sheet_status_map.keys()) | {c["name"] for c in ALL_CHARS}
     merged_chars = []
     for name in all_names_set:
         detail = detailed_by_name.get(name)
-        # 簡繁體 fallback：若 sheet 名字找不到 detail，找對應
+        # 简繁体 fallback：若 sheet 名字找不到 detail，找对应
         if not detail:
             for alias in _NAME_ALIASES.get(name, []):
                 if alias in detailed_by_name:
                     detail = detailed_by_name[alias]
                     break
         status = get_char_stock_status(name, fallback_in_stock=(detail or {}).get("in_stock", False))
-        gender = (detail or {}).get("gender", "女")  # 預設女（過渡期）
+        gender = (detail or {}).get("gender", "女")  # 预设女（过渡期）
         merged_chars.append({
             "display_name": name,
             "detail": detail,
@@ -281,7 +281,7 @@ with tab1:
             "gender": gender,
         })
 
-    # 去重：如果 sheet 和 characters.py 都有，只保留一個（用 detail 的名字）
+    # 去重：如果 sheet 和 characters.py 都有，只保留一个（用 detail 的名字）
     seen_detail_ids = set()
     unique_chars = []
     for mc in merged_chars:
@@ -293,7 +293,7 @@ with tab1:
             mc["display_name"] = mc["detail"]["name"]
         unique_chars.append(mc)
 
-    # 排序：依 characters.py 原本順序（有 detail 的），然後 sheet-only 的照名字
+    # 排序：依 characters.py 原本顺序（有 detail 的），然后 sheet-only 的照名字
     _detail_order = {c["name"]: i for i, c in enumerate(ALL_CHARS)}
     def _sort_key(x):
         if x["detail"]:
@@ -301,20 +301,20 @@ with tab1:
         return (1, x["display_name"])
     unique_chars.sort(key=_sort_key)
 
-    # ── 第一層：性別 filter（只有 女 / 男 兩個 pill；預設女）──
+    # ── 第一层：性别 filter（只有 女 / 男 两个 pill；预设女）──
     gender_filter = st.radio(
-        "性別",
+        "性别",
         ["👩 女角色", "👨 男角色"],
         horizontal=True,
         label_visibility="collapsed",
         key="tab1_gender_filter",
     )
-    # 選中色：女=粉紅 glow、男=藍 glow
+    # 选中色：女=粉红 glow、男=蓝 glow
     if gender_filter == "👨 男角色":
         _g_color, _g_glow = "#4A9EE0", "#4A9EE088"
     else:
         _g_color, _g_glow = "#E879A0", "#E879A088"
-    # 放寬選擇器：applies to all st.radio selected state（character radio 也會跟隨目前性別色，視覺一致）
+    # 放宽选择器：applies to all st.radio selected state（character radio 也会跟随目前性别色，视觉一致）
     st.markdown(f"""
     <style>
     div[data-testid="stRadio"] [role="radiogroup"] > label:has(input[type="radio"]:checked) {{
@@ -332,14 +332,14 @@ with tab1:
     else:
         filtered = [c for c in unique_chars if c["gender"] == "女"]
 
-    # ── 第二層：按狀態分桶 ──────────────
-    bucket_in_stock = [c for c in filtered if c["status"] == "已入庫"]
-    bucket_in_review = [c for c in filtered if c["status"] in ("待審", "需調整", "駁回")]
+    # ── 第二层：按状态分桶 ──────────────
+    bucket_in_stock = [c for c in filtered if c["status"] == "已入库"]
+    bucket_in_review = [c for c in filtered if c["status"] in ("待审", "需调整", "驳回")]
     bucket_in_dev = [c for c in filtered if c["status"] == "捏人中" or c["status"] is None]
 
-    # ── 角色詳情渲染函式 ──────────────
+    # ── 角色详情渲染函式 ──────────────
     def render_character_detail(char):
-        """完整渲染一個有 detail 資料的角色。"""
+        """完整渲染一个有 detail 资料的角色。"""
         ig_badge = (
             f'<a href="{char["ig_url"]}" target="_blank" style="font-size:12px;color:#555;text-decoration:none;">{char["ig"]} ↗</a>'
             if char.get("ig") else '<span style="font-size:12px;color:#444;">IG 待建立</span>'
@@ -424,7 +424,7 @@ with tab1:
                     """, unsafe_allow_html=True)
 
     def render_placeholder(name, status):
-        """只在 sheet 有、characters.py 還沒建檔的角色 —— 顯示佔位卡片。"""
+        """只在 sheet 有、characters.py 还没建档的角色 —— 显示占位卡片。"""
         badge_html = ""
         if status and status in _BADGE_STYLES:
             _c, _lbl = _BADGE_STYLES[status]
@@ -432,27 +432,27 @@ with tab1:
         st.markdown(f"""
         <div style="display:flex;align-items:center;gap:12px;margin:20px 0 14px 0;">
           <span style="font-size:24px;font-weight:700;color:#fff;">{name}</span>
-          <span style="background:#7C6BDB22;border:1px solid #7C6BDB;color:#7C6BDB;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">📝 待建檔</span>
+          <span style="background:#7C6BDB22;border:1px solid #7C6BDB;color:#7C6BDB;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:600;">📝 待建档</span>
           {badge_html}
         </div>
         <div style="background:#1e1e1e;border:1px dashed #333;border-radius:10px;padding:40px 20px;text-align:center;margin-top:12px;">
-          <div style="color:#999;font-size:14px;margin-bottom:8px;">「{name}」已登記於總控台，但尚未在 characters.py 建立完整檔案</div>
-          <div style="color:#555;font-size:12px;">請通知開發者補建：面部錨點、外貌、氣質、內容屬性、世界觀、聲音、商業資料、AI prompt、照片等</div>
+          <div style="color:#999;font-size:14px;margin-bottom:8px;">「{name}」已登记于总控台，但尚未在 characters.py 建立完整档案</div>
+          <div style="color:#555;font-size:12px;">请通知开发者补建：面部锚点、外貌、气质、内容属性、世界观、声音、商业资料、AI prompt、照片等</div>
         </div>
         """, unsafe_allow_html=True)
 
     def render_bucket(chars_in_bucket, bucket_key):
-        """渲染某一個桶子的 radio + 選中角色詳情。"""
+        """渲染某一个桶子的 radio + 选中角色详情。"""
         if not chars_in_bucket:
             st.markdown(
-                '<div style="color:#555;font-size:13px;padding:24px 8px;">此區塊目前沒有角色</div>',
+                '<div style="color:#555;font-size:13px;padding:24px 8px;">此区块目前没有角色</div>',
                 unsafe_allow_html=True,
             )
             return
         names = [c["display_name"] for c in chars_in_bucket]
         if len(names) <= 10:
             sel = st.radio(
-                "選擇角色",
+                "选择角色",
                 names,
                 horizontal=True,
                 label_visibility="collapsed",
@@ -460,7 +460,7 @@ with tab1:
             )
         else:
             sel = st.selectbox(
-                "選擇角色",
+                "选择角色",
                 names,
                 label_visibility="collapsed",
                 key=f"tab1_sel_{bucket_key}",
@@ -471,11 +471,11 @@ with tab1:
         else:
             render_placeholder(mc["display_name"], mc["status"])
 
-    # ── 狀態子分頁 ──────────────
+    # ── 状态子分页 ──────────────
     sub_tabs = st.tabs([
-        f"🟢 已入庫 ({len(bucket_in_stock)})",
-        f"⏳ 待審核 ({len(bucket_in_review)})",
-        f"🧊 開發中 ({len(bucket_in_dev)})",
+        f"🟢 已入库 ({len(bucket_in_stock)})",
+        f"⏳ 待审核 ({len(bucket_in_review)})",
+        f"🧊 开发中 ({len(bucket_in_dev)})",
         f"📚 全部 ({len(filtered)})",
     ])
     with sub_tabs[0]: render_bucket(bucket_in_stock, "in_stock")
@@ -487,7 +487,7 @@ with tab1:
 
 
 # ════════════════════════════════════════════════════════
-# TAB 2：专案进度（暂时隐藏 2026-04-24，未來恢复：把 if False 改 if True）
+# TAB 2：专案进度（暂时隐藏 2026-04-24，未来恢复：把 if False 改 if True）
 # ════════════════════════════════════════════════════════
 if False and tab2 is not None:
  with tab2:
@@ -718,7 +718,7 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "新帳號 @lqq.u_u，2026-04-23 重新開始，快速破 6.2 萬",
+            "note": "新帐号 @lqq.u_u，2026-04-23 重新开始，快速破 6.2 万",
             "updated": "2026-04-23",
             "platforms": [
                 ("📸 IG",      "https://www.instagram.com/lqq.u_u/"),
@@ -743,7 +743,7 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "全新帳號，舊帳 @celine_iso 已棄用",
+            "note": "全新帐号，旧帐 @celine_iso 已弃用",
             "updated": "2026-04-09",
             "platforms": [
                 ("📸 IG",      "https://www.instagram.com/celine.w_iso/"),
@@ -767,7 +767,7 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "IG 穩定成長中",
+            "note": "IG 稳定成长中",
             "updated": "2026-04-13",
             "posts": 2,
             "following": 2,
@@ -777,7 +777,7 @@ with tab3:
             ],
         },
         {
-            "name": "顧染",
+            "name": "顾染",
             "en_name": "Gu Ran",
             "ig": "@good_ran__",
             "ig_url": "https://www.instagram.com/good_ran__/",
@@ -789,7 +789,7 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "新帳號，韓系冷艷路線",
+            "note": "新帐号，韩系冷艳路线",
             "updated": "2026-04-23",
             "platforms": [
                 ("📸 IG", "https://www.instagram.com/good_ran__/"),
@@ -809,7 +809,7 @@ with tab3:
             "avg_likes": None,
             "avg_comments": None,
             "last_post": None,
-            "note": "新帳號，運動系活力風格",
+            "note": "新帐号，运动系活力风格",
             "updated": "2026-04-23",
             "platforms": [
                 ("📸 IG", "https://www.instagram.com/nini_power99/"),
@@ -818,8 +818,8 @@ with tab3:
     ]
 
     STATUS_LABEL = {
-        "active":  ("✅ 活躍", "#4CAF50"),
-        "new":     ("🆕 新帳號", "#7C6BDB"),
+        "active":  ("✅ 活跃", "#4CAF50"),
+        "new":     ("🆕 新帐号", "#7C6BDB"),
         "pending": ("⏳ 待建立", "#555"),
     }
 
@@ -833,30 +833,30 @@ with tab3:
     st.markdown(f"""
     <div class="kpi-wrap">
       <div class="kpi-card">
-        <div class="kpi-label">總追蹤人數</div>
+        <div class="kpi-label">总追踪人数</div>
         <div class="kpi-value" style="color:#E879A0;">{total_followers:,}</div>
-        <div class="kpi-sub">所有角色合計</div>
+        <div class="kpi-sub">所有角色合计</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">已開設帳號</div>
+        <div class="kpi-label">已开设帐号</div>
         <div class="kpi-value" style="color:#FFB300;">{active_count} / 5</div>
         <div class="kpi-sub">{active_names}</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">待建立帳號</div>
+        <div class="kpi-label">待建立帐号</div>
         <div class="kpi-value" style="color:#555;">{pending_count} / 5</div>
         <div class="kpi-sub">{pending_names}</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">數據更新方式</div>
-        <div class="kpi-value" style="font-size:18px;color:#444;">手動</div>
-        <div class="kpi-sub">爬蟲接入後自動更新</div>
+        <div class="kpi-label">数据更新方式</div>
+        <div class="kpi-value" style="font-size:18px;color:#444;">手动</div>
+        <div class="kpi-sub">爬虫接入后自动更新</div>
       </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── 各角色明細卡片 ────────────────────────────────────
-    st.markdown("### 👤 各角色社群明細")
+    # ── 各角色明细卡片 ────────────────────────────────────
+    st.markdown("### 👤 各角色社群明细")
 
     def fmt_metric(val):
         return f"{val:,}" if val is not None else "—"
@@ -868,7 +868,7 @@ with tab3:
         followers_str = f'{d["followers"]:,}' if d["followers"] is not None else "—"
         updated_str = d["updated"] or "—"
 
-        # 平台連結（放在卡片上方）
+        # 平台连结（放在卡片上方）
         if d.get("platforms"):
             links_html = "".join(
                 f'<a href="{url}" target="_blank" style="display:inline-block;margin:0 6px 6px 0;'
@@ -893,20 +893,20 @@ with tab3:
             </div>
           </div>
           <div style="display:flex;gap:24px;flex-wrap:wrap;">
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">追蹤數</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">追踪数</div>
               <div style="font-size:22px;font-weight:700;color:{d['color']};">{followers_str}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">追蹤中</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">追踪中</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['following'])}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">貼文數</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">贴文数</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['posts'])}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">平均讚數</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">平均赞数</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['avg_likes'])}</div></div>
             <div><div style="font-size:11px;color:#666;margin-bottom:2px;">平均留言</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{fmt_metric(d['avg_comments'])}</div></div>
-            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">最後貼文</div>
+            <div><div style="font-size:11px;color:#666;margin-bottom:2px;">最后贴文</div>
               <div style="font-size:22px;font-weight:700;color:#aaa;">{d['last_post'] or '—'}</div></div>
           </div>
-          {f'<div style="margin-top:10px;font-size:12px;color:#555;">備註：{d["note"]}</div>' if d["note"] else ""}
+          {f'<div style="margin-top:10px;font-size:12px;color:#555;">备注：{d["note"]}</div>' if d["note"] else ""}
         </div>
         """, unsafe_allow_html=True)
 
@@ -914,8 +914,8 @@ with tab3:
             import streamlit.components.v1 as components
             items_html = ""
             for h in d["highlights"]:
-                likes_str = f'{h["likes"] // 10000}萬+' if h["likes"] >= 10000 else str(h["likes"])
-                views_str = f'{h["views"] // 10000}萬+' if h["views"] >= 10000 else str(h["views"])
+                likes_str = f'{h["likes"] // 10000}万+' if h["likes"] >= 10000 else str(h["likes"])
+                views_str = f'{h["views"] // 10000}万+' if h["views"] >= 10000 else str(h["views"])
                 content_html = h["content"].replace("\n", "<br>")
                 items_html += (
                     '<div style="background:#1a1a1a;border-radius:8px;padding:10px 14px;margin-bottom:8px;">'
@@ -925,27 +925,27 @@ with tab3:
                     f'<div style="font-size:12px;color:#aaa;line-height:1.5;">{content_html}</div>'
                     '</div>'
                     '<div style="display:flex;gap:16px;flex-shrink:0;margin-left:12px;">'
-                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">❤️ 讚</div><div style="font-size:15px;font-weight:700;color:#E879A0;">{likes_str}</div></div>'
+                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">❤️ 赞</div><div style="font-size:15px;font-weight:700;color:#E879A0;">{likes_str}</div></div>'
                     f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">💬 留言</div><div style="font-size:15px;font-weight:700;color:#aaa;">{h["comments"]}</div></div>'
-                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">▶️ 觀看</div><div style="font-size:15px;font-weight:700;color:#FFB300;">{views_str}</div></div>'
+                    f'<div style="text-align:center;"><div style="font-size:11px;color:#666;">▶️ 观看</div><div style="font-size:15px;font-weight:700;color:#FFB300;">{views_str}</div></div>'
                     '</div></div></div>'
                 )
             highlight_html = (
                 f'<div style="font-family:sans-serif;background:#242424;border:1px solid #3a3a3a;border-radius:10px;'
                 f'padding:16px 20px;margin-bottom:8px;border-left:3px solid {d["color"]};">'
-                '<div style="font-size:11px;color:#E879A0;font-weight:600;margin-bottom:10px;">🔥 亮點貼文</div>'
+                '<div style="font-size:11px;color:#E879A0;font-weight:600;margin-bottom:10px;">🔥 亮点贴文</div>'
                 + items_html +
                 '</div>'
             )
             components.html(highlight_html, height=len(d["highlights"]) * 100 + 60, scrolling=False)
 
 
-    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 · 社群數據監控</div>", unsafe_allow_html=True)
+    st.markdown("<br><div style='text-align:center;color:#444;font-size:12px;'>智影AI角色库 · 社群数据监控</div>", unsafe_allow_html=True)
 
 
 with tab4:
-    st.markdown("## \U0001f39b\ufe0f 角色進度總控台")
-    st.caption("資料來源：Google Sheets 自動同步")
+    st.markdown("## \U0001f39b\ufe0f 角色进度总控台")
+    st.caption("资料来源：Google Sheets 自动同步")
 
     @st.cache_resource(ttl=60)
     def get_gsheet_connection():
@@ -961,14 +961,14 @@ with tab4:
     try:
         client = get_gsheet_connection()
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
-        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")
+        ws = sheet.worksheet("\U0001f39b\ufe0f 总控台")
 
         all_data = ws.get_all_values()
 
-        # 用欄位索引 (A=0, B=1, ... N=13)
-        # A:序號 B:角色名 C:建立者 D:建立日期 E:捏人公司 F:捏人狀態
-        # G:捏人完成日 H:Mr.B初審 I:初審日期 J:海哥審核 K:海哥審核日期
-        # L:目前狀態 M:入庫日期 N:備註
+        # 用栏位索引 (A=0, B=1, ... N=13)
+        # A:序号 B:角色名 C:建立者 D:建立日期 E:捏人公司 F:捏人状态
+        # G:捏人完成日 H:Mr.B初审 I:初审日期 J:海哥审核 K:海哥审核日期
+        # L:目前状态 M:入库日期 N:备注
         COL_NAME = 1
         COL_CREATOR = 2
         COL_NIEN_STATUS = 5
@@ -980,13 +980,13 @@ with tab4:
         COL_STOCK_DATE = 12
         COL_NOTE = 13
 
-        # 找表頭行和提領區
+        # 找表头行和提领区
         header_row_idx = None
         req_start_idx = None
         for i, row in enumerate(all_data):
-            if len(row) > 1 and row[0].strip() == "序號" and header_row_idx is None:
+            if len(row) > 1 and row[0].strip() == "序号" and header_row_idx is None:
                 header_row_idx = i
-            if len(row) > 0 and "提領" in str(row[0]):
+            if len(row) > 0 and "提领" in str(row[0]):
                 req_start_idx = i
 
         if header_row_idx is not None:
@@ -1000,27 +1000,87 @@ with tab4:
 
             if char_rows:
                 total = len(char_rows)
-                in_stock = sum(1 for r in char_rows if "已入庫" in str(r[COL_STATUS]))
-                in_review = sum(1 for r in char_rows if "待海哥審" in str(r[COL_STATUS]))
+                in_stock = sum(1 for r in char_rows if "已入库" in str(r[COL_STATUS]))
+                in_review = sum(1 for r in char_rows if "待海哥审" in str(r[COL_STATUS]))
                 in_making = sum(1 for r in char_rows if "捏人中" in str(r[COL_STATUS]))
-                need_fix = sum(1 for r in char_rows if "駁回" in str(r[COL_STATUS]) or "需修改" in str(r[COL_STATUS]))
+                need_fix = sum(1 for r in char_rows if "驳回" in str(r[COL_STATUS]) or "需修改" in str(r[COL_STATUS]))
 
                 c1, c2, c3, c4, c5 = st.columns(5)
-                c1.metric("總角色數", total)
-                c2.metric("已入庫", in_stock)
-                c3.metric("待海哥審", in_review)
+                c1.metric("总角色数", total)
+                c2.metric("已入库", in_stock)
+                c3.metric("待海哥审", in_review)
                 c4.metric("捏人中", in_making)
                 c5.metric("需修改", need_fix)
 
                 st.markdown("---")
-                st.markdown("### 角色狀態一覽")
+                st.markdown("### 海哥审核专区")
+
+                pending = [r for r in char_rows if "待海哥审" in str(r[COL_STATUS])]
+
+                if not pending:
+                    st.success("目前没有待审核的角色")
+                else:
+                    boss_pwd = st.text_input("请输入审核密码", type="password", key="boss_pwd")
+
+                    if boss_pwd == "haige888":
+                        st.success("身份验证成功")
+
+                        for row in pending:
+                            name = row[COL_NAME].strip()
+                            creator = row[COL_CREATOR] if len(row) > COL_CREATOR else ""
+                            mrb = row[COL_MRB_REVIEW] if len(row) > COL_MRB_REVIEW else ""
+                            note = row[COL_NOTE] if len(row) > COL_NOTE else ""
+
+                            with st.expander(f"{name} — 待审核", expanded=True):
+                                st.write(f"**建立者：** {creator}")
+                                st.write(f"**初审结果：** {mrb}")
+                                if note:
+                                    st.write(f"**备注：** {note}")
+
+                                b1, b2, b3 = st.columns(3)
+                                approve = b1.button("✅ 通过", key=f"ap_{name}")
+                                reject = b2.button("驳回", key=f"rj_{name}")
+                                adjust = b3.button("需调整", key=f"ad_{name}")
+
+                                if approve or reject or adjust:
+                                    all_vals = ws.get_all_values()
+                                    for si, sr in enumerate(all_vals):
+                                        if len(sr) > COL_NAME and sr[COL_NAME].strip() == name:
+                                            actual_row = si + 1
+                                            today = datetime.now().strftime("%Y-%m-%d")
+
+                                            if approve:
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "✅ 通过")
+                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "🟢 已入库")
+                                                ws.update_cell(actual_row, COL_STOCK_DATE + 1, today)
+                                                st.success(f"{name} 已通过审核！")
+                                            elif reject:
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "🔴 驳回")
+                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "🔴 海哥驳回")
+                                                st.error(f"{name} 已驳回")
+                                            elif adjust:
+                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "⚠️ 需调整")
+                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
+                                                ws.update_cell(actual_row, COL_STATUS + 1, "🟠 初审需修改")
+                                                st.warning(f"{name} 需调整")
+
+                                            st.cache_resource.clear()
+                                            st.rerun()
+                                            break
+                    elif boss_pwd:
+                        st.error("密码错误")
+
+                st.markdown("---")
+                st.markdown("### 角色状态一览")
 
                 status_colors = {
-                    "已入庫": "#2ecc71",
-                    "待海哥審": "#9b59b6",
+                    "已入库": "#2ecc71",
+                    "待海哥审": "#9b59b6",
                     "捏人中": "#f39c12",
-                    "待初審": "#3498db",
-                    "駁回": "#e74c3c",
+                    "待初审": "#3498db",
+                    "驳回": "#e74c3c",
                     "需修改": "#e67e22",
                     "建立中": "#95a5a6",
                     "已下架": "#2c3e50",
@@ -1047,71 +1107,11 @@ with tab4:
                         f'</div>',
                         unsafe_allow_html=True,
                     )
-
-                st.markdown("---")
-                st.markdown("### 海哥審核專區")
-
-                pending = [r for r in char_rows if "待海哥審" in str(r[COL_STATUS])]
-
-                if not pending:
-                    st.success("目前沒有待審核的角色")
-                else:
-                    boss_pwd = st.text_input("請輸入審核密碼", type="password", key="boss_pwd")
-
-                    if boss_pwd == "haige888":
-                        st.success("身份驗證成功")
-
-                        for row in pending:
-                            name = row[COL_NAME].strip()
-                            creator = row[COL_CREATOR] if len(row) > COL_CREATOR else ""
-                            mrb = row[COL_MRB_REVIEW] if len(row) > COL_MRB_REVIEW else ""
-                            note = row[COL_NOTE] if len(row) > COL_NOTE else ""
-
-                            with st.expander(f"{name} — 待審核", expanded=True):
-                                st.write(f"**建立者：** {creator}")
-                                st.write(f"**初審結果：** {mrb}")
-                                if note:
-                                    st.write(f"**備註：** {note}")
-
-                                b1, b2, b3 = st.columns(3)
-                                approve = b1.button("✅ 通過", key=f"ap_{name}")
-                                reject = b2.button("駁回", key=f"rj_{name}")
-                                adjust = b3.button("需調整", key=f"ad_{name}")
-
-                                if approve or reject or adjust:
-                                    all_vals = ws.get_all_values()
-                                    for si, sr in enumerate(all_vals):
-                                        if len(sr) > COL_NAME and sr[COL_NAME].strip() == name:
-                                            actual_row = si + 1
-                                            today = datetime.now().strftime("%Y-%m-%d")
-
-                                            if approve:
-                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "✅ 通過")
-                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
-                                                ws.update_cell(actual_row, COL_STATUS + 1, "🟢 已入庫")
-                                                ws.update_cell(actual_row, COL_STOCK_DATE + 1, today)
-                                                st.success(f"{name} 已通過審核！")
-                                            elif reject:
-                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "🔴 駁回")
-                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
-                                                ws.update_cell(actual_row, COL_STATUS + 1, "🔴 海哥駁回")
-                                                st.error(f"{name} 已駁回")
-                                            elif adjust:
-                                                ws.update_cell(actual_row, COL_BOSS_REVIEW + 1, "⚠️ 需調整")
-                                                ws.update_cell(actual_row, COL_BOSS_DATE + 1, today)
-                                                ws.update_cell(actual_row, COL_STATUS + 1, "🟠 初審需修改")
-                                                st.warning(f"{name} 需調整")
-
-                                            st.cache_resource.clear()
-                                            st.rerun()
-                                            break
-                    elif boss_pwd:
-                        st.error("密碼錯誤")
             else:
-                st.info("目前沒有角色資料")
+                st.info("目前没有角色资料")
         else:
-            st.warning("找不到總控台表頭，請確認 Google Sheets 格式")
+            st.warning("找不到总控台表头，请确认 Google Sheets 格式")
 
     except Exception as e:
-        st.error(f"無法連接 Google Sheets：{str(e)}")
-        st.info("請確認：\n1. 已在 Streamlit Secrets 設定 GCP 服務帳號金鑰\n2. Google Sheets 已分享給服務帳號\n3. 總控台分頁已建立")
+        st.error(f"无法连接 Google Sheets：{str(e)}")
+        st.info("请确认：\n1. 已在 Streamlit Secrets 设定 GCP 服务帐号金钥\n2. Google Sheets 已分享给服务帐号\n3. 总控台分页已建立")
