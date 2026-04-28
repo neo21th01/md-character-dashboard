@@ -1053,7 +1053,19 @@ with tab4:
                 st.markdown("---")
                 st.markdown("### 海哥审核专区")
 
-                pending = [r for r in char_rows if "待海哥审" in str(r[COL_STATUS])]
+                # 标记为 dev_phase 的角色不出现在海哥审核区（即使 sheet 状态是「待海哥审」）
+                from characters import CHARACTERS as _ALL_CHARS_FOR_FILTER
+                _dev_names = {
+                    n
+                    for c in _ALL_CHARS_FOR_FILTER
+                    if c.get("dev_phase")
+                    for n in [c["name"]] + _NAME_ALIASES.get(c["name"], [])
+                }
+                pending = [
+                    r for r in char_rows
+                    if "待海哥审" in str(r[COL_STATUS]) or "待海哥審" in str(r[COL_STATUS])
+                    if r[COL_NAME].strip() not in _dev_names
+                ]
 
                 if not pending:
                     st.success("目前没有待审核的角色")
