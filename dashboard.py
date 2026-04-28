@@ -165,7 +165,11 @@ def _load_stock_status_from_sheet():
         creds = Credentials.from_service_account_info(creds_dict, scopes=scopes)
         client = gspread.authorize(creds)
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
-        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")  # 注意：Google Sheets 上頁簽名是繁體「總控台」，不要轉簡
+        # Worksheet 名稱兼容繁簡：先試簡體，找不到再試繁體
+        try:
+            ws = sheet.worksheet("\U0001f39b\ufe0f 总控台")
+        except Exception:
+            ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")
         # 只读名称 + 状态两栏，不整表拉
         names = ws.col_values(2)  # B 栏 = COL_NAME + 1
         statuses = ws.col_values(12)  # L 栏 = COL_STATUS + 1
@@ -965,7 +969,11 @@ with tab4:
     try:
         client = get_gsheet_connection()
         sheet = client.open_by_key("1p5PkaYQQ8_g4iW9dRJlKucGG8o4kSKEZEBwEmknEV9k")
-        ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")  # 注意：Google Sheets 上頁簽名是繁體「總控台」，不要轉簡
+        # Worksheet 名稱兼容繁簡：先試簡體，找不到再試繁體
+        try:
+            ws = sheet.worksheet("\U0001f39b\ufe0f 总控台")
+        except Exception:
+            ws = sheet.worksheet("\U0001f39b\ufe0f 總控台")
 
         all_data = ws.get_all_values()
 
@@ -1075,6 +1083,93 @@ with tab4:
                                             break
                     elif boss_pwd:
                         st.error("密码错误")
+
+                st.markdown("---")
+
+                # ── 一次性管理工具：繁體→簡體 sheet 轉換 ──────────────
+                with st.expander("🛠️ 管理工具：一键将 Sheet 繁体内容转简体", expanded=False):
+                    st.warning("⚠️ 此工具会修改 Google Sheet 的内容（重命名总控台 worksheet + 更新角色名/状态单元格）。建议先备份 sheet。点一次就够，之后可不再使用。")
+
+                    if st.button("🔄 立刻执行繁→简转换", key="convert_t2s"):
+                        # 已知繁简对照（覆盖 sheet 常见用字）
+                        T2S = {
+                            "🎛️ 總控台": "🎛️ 总控台",
+                            "林淺淺": "林浅浅",
+                            "顧染": "顾染",
+                            "紀煙": "纪烟",
+                            "🟢 已入庫": "🟢 已入库",
+                            "已入庫": "已入库",
+                            "🔴 待海哥審": "🔴 待海哥审",
+                            "待海哥審": "待海哥审",
+                            "🔴 駁回": "🔴 驳回",
+                            "駁回": "驳回",
+                            "海哥駁回": "海哥驳回",
+                            "🟠 初審需修改": "🟠 初审需修改",
+                            "初審需修改": "初审需修改",
+                            "需調整": "需调整",
+                            "✅ 通過": "✅ 通过",
+                            "通過": "通过",
+                            "⚠️ 需調整": "⚠️ 需调整",
+                        }
+                        report = []
+                        # 1) 重命名 worksheet（如果是繁體）
+                        try:
+                            cur_title = ws.title
+                            new_title = T2S.get(cur_title, cur_title)
+                            if new_title != cur_title:
+                                ws.update_title(new_title)
+                                report.append(f"✓ Worksheet 重命名：「{cur_title}」→「{new_title}」")
+                            else:
+                                report.append(f"○ Worksheet 名称已是简体（「{cur_title}」），跳过")
+                        except Exception as e:
+                            report.append(f"✗ Worksheet 重命名失败：{e}")
+
+                        # 2) 扫描 COL_NAME / COL_STATUS / COL_BOSS_REVIEW / COL_NOTE 单元格
+                        try:
+                            all_vals = ws.get_all_values()
+                            updates = []
+                            for ri, row in enumerate(all_vals):
+                                if ri < 2:  # 跳过前 2 行表头
+                                    continue
+                                for ci in (COL_NAME, COL_STATUS, COL_BOSS_REVIEW, COL_NOTE):
+                                    if ci >= len(row):
+                                        continue
+                                    orig = row[ci] or ""
+                                    conv = orig
+                                    for k, v in T2S.items():
+                                        conv = conv.replace(k, v)
+                                    if conv != orig:
+                                        updates.append((ri + 1, ci + 1, orig, conv))
+
+                            if not updates:
+                                report.append("○ 单元格全部已是简体，无需更新")
+                            else:
+                                # 用 batch_update 减少 API 调用
+                                cells_to_update = [
+                                    {"range": f"{chr(ord('A') + c - 1)}{r}", "values": [[v]]}
+                                    for r, c, _, v in updates
+                                ]
+                                ws.batch_update(cells_to_update)
+                                report.append(f"✓ 已更新 {len(updates)} 个单元格")
+                                for r, c, o, n in updates[:10]:
+                                    report.append(f"   • 第 {r} 列第 {c} 欄: 「{o}」→「{n}」")
+                                if len(updates) > 10:
+                                    report.append(f"   ...（共 {len(updates)} 项）")
+                        except Exception as e:
+                            report.append(f"✗ 单元格转换失败：{e}")
+
+                        # 显示报告
+                        for line in report:
+                            if line.startswith("✓"):
+                                st.success(line)
+                            elif line.startswith("✗"):
+                                st.error(line)
+                            else:
+                                st.info(line)
+
+                        st.cache_data.clear()
+                        st.cache_resource.clear()
+                        st.info("快取已清空，下方资料会重新载入。")
 
                 st.markdown("---")
                 st.markdown("### 角色状态一览")
