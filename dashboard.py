@@ -333,9 +333,12 @@ with tab1:
         filtered = [c for c in unique_chars if c["gender"] == "女"]
 
     # ── 第二层：按状态分桶 ──────────────
-    bucket_in_stock = [c for c in filtered if c["status"] == "已入库"]
-    bucket_in_review = [c for c in filtered if c["status"] in ("待审", "需调整", "驳回")]
-    bucket_in_dev = [c for c in filtered if c["status"] == "捏人中" or c["status"] is None]
+    # 角色被标记 dev_phase 时强制归到 开发中（不论 sheet 状态）
+    def _is_dev(c):
+        return bool(c.get("detail") and c["detail"].get("dev_phase"))
+    bucket_in_stock = [c for c in filtered if c["status"] == "已入库" and not _is_dev(c)]
+    bucket_in_review = [c for c in filtered if c["status"] in ("待审", "需调整", "驳回") and not _is_dev(c)]
+    bucket_in_dev = [c for c in filtered if _is_dev(c) or c["status"] == "捏人中" or c["status"] is None]
 
     # ── 角色详情渲染函式 ──────────────
     def render_character_detail(char):
