@@ -181,17 +181,17 @@ def _load_stock_status_from_sheet():
                 continue
             if status_map.get(name) == "已入库":
                 continue
-            # 同时匹配繁体与简体（sheet 端可能仍是繁体）
-            # 注意比对顺序：先比对更具体的字串（含「初审」/「海哥」前缀），再比对一般字
-            if "已入库" in status or "已入庫" in status:
+            # Sheet 状态已统一简体（user 2026-04-28 确认）
+            # 比对顺序：先比对更具体的字串（含「初审」/「海哥」前缀），再比对一般字
+            if "已入库" in status:
                 status_map[name] = "已入库"
-            elif "待海哥审" in status or "待海哥審" in status:
+            elif "待海哥审" in status:
                 status_map[name] = "待审"
-            elif "初审需修改" in status or "初審需修改" in status:
+            elif "初审需修改" in status:
                 status_map[name] = "初审需修改"  # Mr.B 初审阶段的回稿，归开发中
-            elif "海哥驳回" in status or "海哥駁回" in status or "驳回" in status or "駁回" in status:
+            elif "海哥驳回" in status or "驳回" in status:
                 status_map[name] = "驳回"
-            elif "海哥需调整" in status or "海哥需調整" in status or "需调整" in status or "需修改" in status or "需調整" in status:
+            elif "海哥需调整" in status or "需调整" in status or "需修改" in status:
                 status_map[name] = "需调整"
             elif "捏人中" in status:
                 status_map[name] = "捏人中"
@@ -1067,7 +1067,7 @@ with tab4:
                 }
                 pending = [
                     r for r in char_rows
-                    if "待海哥审" in str(r[COL_STATUS]) or "待海哥審" in str(r[COL_STATUS])
+                    if "待海哥审" in str(r[COL_STATUS])
                     if r[COL_NAME].strip() not in _dev_names
                 ]
 
