@@ -182,13 +182,16 @@ def _load_stock_status_from_sheet():
             if status_map.get(name) == "已入库":
                 continue
             # 同时匹配繁体与简体（sheet 端可能仍是繁体）
+            # 注意比对顺序：先比对更具体的字串（含「初审」/「海哥」前缀），再比对一般字
             if "已入库" in status or "已入庫" in status:
                 status_map[name] = "已入库"
             elif "待海哥审" in status or "待海哥審" in status:
                 status_map[name] = "待审"
-            elif "驳回" in status or "駁回" in status:
+            elif "初审需修改" in status or "初審需修改" in status:
+                status_map[name] = "初审需修改"  # Mr.B 初审阶段的回稿，归开发中
+            elif "海哥驳回" in status or "海哥駁回" in status or "驳回" in status or "駁回" in status:
                 status_map[name] = "驳回"
-            elif "需调整" in status or "需修改" in status or "需調整" in status:
+            elif "海哥需调整" in status or "海哥需調整" in status or "需调整" in status or "需修改" in status or "需調整" in status:
                 status_map[name] = "需调整"
             elif "捏人中" in status:
                 status_map[name] = "捏人中"
@@ -259,11 +262,12 @@ with tab1:
     }
 
     _BADGE_STYLES = {
-        "已入库":  ("#4CAF50", "✅ 已入库"),
-        "待审":    ("#FFB300", "⏳ 待海哥审"),
-        "驳回":    ("#F44336", "🔴 驳回"),
-        "需调整":  ("#FF9800", "⚠️ 需调整"),
-        "捏人中":  ("#7C6BDB", "🧊 捏人中"),
+        "已入库":      ("#4CAF50", "✅ 已入库"),
+        "待审":        ("#FFB300", "⏳ 待海哥审"),
+        "驳回":        ("#F44336", "🔴 驳回"),
+        "需调整":      ("#FF9800", "⚠️ 需调整"),
+        "初审需修改":  ("#FF9800", "🟠 初审需修改"),
+        "捏人中":      ("#7C6BDB", "🧊 捏人中"),
     }
 
     # ── 合并 sheet 角色名 + characters.py 详细资料 ──────────────
@@ -364,7 +368,7 @@ with tab1:
     bucket_in_dev = [
         c for c in filtered
         if _is_dev(c)
-        or ((c["status"] == "捏人中" or c["status"] is None) and not _is_force_review(c))
+        or ((c["status"] in ("捏人中", "初审需修改") or c["status"] is None) and not _is_force_review(c))
     ]
 
     # ── 角色详情渲染函式 ──────────────
