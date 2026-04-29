@@ -22,6 +22,7 @@ CHARACTERS = [
         "images": [
             "assets/characters/林浅浅4.jpg",
         ],
+        "voice_file": "assets/voices/林淺淺.wav",
         "basic": [
             ("角色名称", "林浅浅"),
             ("性别", "女"),
@@ -103,6 +104,7 @@ CHARACTERS = [
         "images": [
             "assets/characters/胡芊璐最新版.jpg",
         ],
+        "voice_file": "assets/voices/胡芊璐.wav",
         "basic": [
             ("角色名称", "胡芊璐"),
             ("性别", "女"),
