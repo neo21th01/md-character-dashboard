@@ -268,6 +268,7 @@ CHARACTERS = [
         "images": [
             "assets/characters/顾然版本428.jpg",
         ],
+        "voice_file": "assets/voices/顾染.mp3",
         "basic": [
             ("角色名称", "顾染"),
             ("性别", "女"),
