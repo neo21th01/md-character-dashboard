@@ -454,23 +454,28 @@ with tab1:
                 for key, label in SECTION_LABELS:
                     if key not in char: continue
                     table_html = section_table(char[key])
+                    # 「五、声音/表演」特殊处理：label → 🔊 播放器 → 表格（声线/语言/情绪范围）
+                    if key == "voice" and char.get("voice_file"):
+                        full_voice_path = os.path.join(os.path.dirname(__file__), char["voice_file"])
+                        if os.path.exists(full_voice_path):
+                            st.markdown(
+                                f'<div style="font-size:12px;color:#E879A0;font-weight:600;margin-bottom:4px;letter-spacing:0.05em;">{label}</div>'
+                                '<div style="font-size:12px;color:#E879A0;font-weight:600;margin:4px 0 6px 0;">🔊 角色声音示范</div>',
+                                unsafe_allow_html=True,
+                            )
+                            st.audio(full_voice_path)
+                            st.markdown(
+                                f'<div class="card" style="padding:4px 0;margin-bottom:10px;">{table_html}</div>',
+                                unsafe_allow_html=True,
+                            )
+                            continue
+                    # 其他 section 维持原样
                     st.markdown(f"""
                     <div style="margin-bottom:10px;">
                       <div style="font-size:12px;color:#E879A0;font-weight:600;margin-bottom:4px;letter-spacing:0.05em;">{label}</div>
                       <div class="card" style="padding:4px 0;">{table_html}</div>
                     </div>
                     """, unsafe_allow_html=True)
-                    # 「五、声音/表演」区块下方挂音档播放器（如果角色有 voice_file）
-                    if key == "voice":
-                        voice_file = char.get("voice_file")
-                        if voice_file:
-                            full_voice_path = os.path.join(os.path.dirname(__file__), voice_file)
-                            if os.path.exists(full_voice_path):
-                                st.markdown(
-                                    '<div style="font-size:12px;color:#E879A0;font-weight:600;margin:4px 0 6px 0;">🔊 角色声音示范</div>',
-                                    unsafe_allow_html=True,
-                                )
-                                st.audio(full_voice_path)
 
     def render_placeholder(name, status):
         """只在 sheet 有、characters.py 还没建档的角色 —— 显示占位卡片。"""
