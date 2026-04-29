@@ -101,7 +101,7 @@ CHARACTERS = [
             "tiktok": "https://www.tiktok.com/@hu_maturemommy",
         },
         "images": [
-            "assets/characters/胡芊璐第二版小版.jpg",
+            "assets/characters/胡芊璐最新版.jpg",
         ],
         "basic": [
             ("角色名称", "胡芊璐"),
