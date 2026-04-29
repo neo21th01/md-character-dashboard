@@ -454,17 +454,20 @@ with tab1:
                 for key, label in SECTION_LABELS:
                     if key not in char: continue
                     table_html = section_table(char[key])
-                    # 「五、声音/表演」特殊处理：label → 🔊 播放器 → 表格（声线/语言/情绪范围）
+                    # 「五、声音/表演」特殊处理：label → [🔊 按钮 + 播放器同一行] → 表格
                     if key == "voice" and char.get("voice_file"):
                         full_voice_path = os.path.join(os.path.dirname(__file__), char["voice_file"])
                         if os.path.exists(full_voice_path):
+                            import base64
+                            with open(full_voice_path, "rb") as _af:
+                                _audio_b64 = base64.b64encode(_af.read()).decode()
+                            _mime = "audio/wav" if full_voice_path.lower().endswith(".wav") else "audio/mpeg"
                             st.markdown(
                                 f'<div style="font-size:12px;color:#E879A0;font-weight:600;margin-bottom:4px;letter-spacing:0.05em;">{label}</div>'
-                                '<div style="display:inline-block;background:#2a2a2a;border:1px solid #555;color:#bbb;padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;margin:6px 0 8px 0;box-shadow:0 0 10px rgba(255,255,255,0.12);letter-spacing:0.03em;">🔊 角色声音示范</div>',
-                                unsafe_allow_html=True,
-                            )
-                            st.audio(full_voice_path)
-                            st.markdown(
+                                f'<div style="display:flex;align-items:center;gap:12px;margin:6px 0 8px 0;">'
+                                f'  <span style="background:#2a2a2a;border:1px solid #555;color:#bbb;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:600;box-shadow:0 0 10px rgba(255,255,255,0.12);letter-spacing:0.03em;white-space:nowrap;">🔊 角色声音示范</span>'
+                                f'  <audio controls preload="metadata" style="flex:1;height:32px;min-width:0;" src="data:{_mime};base64,{_audio_b64}"></audio>'
+                                f'</div>'
                                 f'<div class="card" style="padding:4px 0;margin-bottom:10px;">{table_html}</div>',
                                 unsafe_allow_html=True,
                             )
