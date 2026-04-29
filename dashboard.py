@@ -1121,6 +1121,7 @@ with tab4:
                                                 st.warning(f"{name} 需调整")
 
                                             st.cache_resource.clear()
+                                            st.cache_data.clear()  # 清 Tab 1 的 _load_stock_status_from_sheet 快取，让审核结果立即反映
                                             st.rerun()
                                             break
                     elif boss_pwd:
