@@ -460,7 +460,7 @@ with tab1:
                         if os.path.exists(full_voice_path):
                             st.markdown(
                                 f'<div style="font-size:12px;color:#E879A0;font-weight:600;margin-bottom:4px;letter-spacing:0.05em;">{label}</div>'
-                                '<div style="font-size:12px;color:#E879A0;font-weight:600;margin:4px 0 6px 0;">🔊 角色声音示范</div>',
+                                '<div style="display:inline-block;background:#2a2a2a;border:1px solid #555;color:#bbb;padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;margin:6px 0 8px 0;box-shadow:0 0 10px rgba(255,255,255,0.12);letter-spacing:0.03em;">🔊 角色声音示范</div>',
                                 unsafe_allow_html=True,
                             )
                             st.audio(full_voice_path)
